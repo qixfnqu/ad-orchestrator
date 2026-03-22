@@ -1,0 +1,109 @@
+import os
+import shutil
+
+def generate_krb5(domain, dc_ip):
+    realm = domain.upper()
+    print(f"[+] Configuring for DC: {dc_ip} ({domain})")
+
+    krb5_conf = f"""
+default_realm = {realm}
+dns_lookup_realm = false
+dns_lookup_kdc = false
+ticket_lifetime = 24h
+forwardable = true
+rdns = false
+
+[libdefaults]
+    default_realm = {realm}
+    dns_lookup_kdc = false
+    dns_lookup_realm = false
+
+[realms]
+    {realm} = {{
+        kdc = {dc_ip}
+        admin_server = {dc_ip}
+    }}
+
+[domain_realm]
+    .{domain} = {realm}
+    {domain} = {realm}
+"""
+
+    print("\n[+] Generated krb5.conf:\n")
+    print(krb5_conf)
+    choice = input("Accept change? (Y/N) ")
+
+    if choice == "Y":
+        if os.geteuid() == 0:
+            try:
+                with open("/etc/krb5.conf", "w") as f:
+                    f.write(krb5_conf)
+                print("[+] /etc/krb5.conf updated")
+            except Exception as e:
+                print(f"[-] Failed to write krb5.conf: {e}")
+        else:
+            print("[!] Not running as root → cannot write /etc/krb5.conf")
+    elif choice == "N":
+        print("/etc/krb5.conf not updated")
+        return
+    else:
+        print("Invalid option")
+        print("/etc/krb5.conf not updated")
+        return
+
+
+def generate_etc_hosts(ip, hostname):
+    path = "/etc/hosts"
+
+    try:
+        with open(path, "r") as f:
+            lines = f.readlines()
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+    entry_exists = False
+    new_lines = []
+
+    for line in lines:
+        stripped = line.strip()
+
+        if not stripped or stripped.startswith("#"):
+            new_lines.append(line)
+            continue
+
+        parts = stripped.split()
+
+        if parts[0] == ip:
+            entry_exists = True
+            print(f"[!] Existing entry found: {stripped}")
+
+            choice = input("[?] Overwrite this entry? (y/N): ").lower()
+            if choice == "y":
+                new_lines.append(f"{ip}  dc01.{hostname} {hostname}\n")
+                print(f"[+] Updated entry → {ip}  dc01.{hostname} {hostname}")
+            else:
+                new_lines.append(line)
+                print("[*] Keeping existing entry")
+            
+        else:
+            new_lines.append(line)
+
+    if not entry_exists:
+        new_lines.append(f"\n{ip}  dc01.{hostname} {hostname}\n")
+        print(f"[+] Added new entry → {ip}  dc01.{hostname} {hostname}")
+
+    if os.geteuid() != 0:
+        return {
+            "success": False,
+            "error": "Not root",
+            "suggested": f"{ip}    {hostname}"
+        }
+
+    try:
+        shutil.copy(path, path + ".bak")
+        print(f"Generating backup in {path}.bak")
+        with open(path, "w") as f:
+            f.writelines(new_lines)
+        return {"success": True}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
