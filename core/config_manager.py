@@ -113,3 +113,52 @@ def generate_etc_hosts(ip, hostname, dc=False):
         return {"success": True}
     except Exception as e:
         return {"success": False, "error": str(e)}
+
+def add_vhost(target, domain, subdomains):
+    path = "/etc/hosts"
+
+    try:
+        with open(path, "r") as f:
+            lines = f.readlines()
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+    entry = f"{target} {domain} "
+    for sub in subdomains:
+        entry += f"{sub}"
+
+    entry += "\n"
+
+    print(f"[+] New /etc/hosts entry: {entry.strip()}")
+
+    updated = False
+    new_lines = []
+
+    for line in lines:
+        stripped = line.strip()
+
+        if not stripped or stripped.startswith("#"):
+            new_lines.append(line)
+            continue
+
+        parts = stripped.split()
+
+        if parts[0] == target:
+            new_lines.append(entry)
+            updated = True
+        else:
+            new_lines.append(line)
+
+    if not updated:
+        new_lines.append(entry)
+
+    try:
+        with open(path, "w") as f:
+            f.writelines(new_lines)
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+    return {"success": True}
+
+
+    

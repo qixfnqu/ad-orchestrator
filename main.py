@@ -4,19 +4,21 @@ import os
 import sys
 import shlex
 
+
+
 from core import config_manager, enum
 
 TOOL_NAME = "ADFlow"
 
 def print_banner():
     banner = f"""
-    =====================================
-               AD Orchestrator
-    =====================================
-      Automated AD Enumeration Framework
-    =====================================
-    """
+=====================================
+           AD Orchestrator           
+=====================================
+ Automated AD Enumeration Framework  
+====================================="""
     print(banner)
+
 
 
 class Session:
@@ -35,6 +37,7 @@ class Session:
             "nmap_kerberos_output" : "",
             "smb_null_session": False,
             "smb_shares": [],
+            "subdomains" : []
         }
 
 session = Session()

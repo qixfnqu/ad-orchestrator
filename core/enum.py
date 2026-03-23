@@ -238,6 +238,21 @@ def non_credentialed(session):
             print("[+] Running another nmap scan...")
             nmap.web_scan(scan_target)
 
+        subdomain_discovery = input("[?] Do you want to perform subdomain discovery? (Y/N) ").lower()
+        if subdomain_discovery == 'y':
+            mode = input("[?] Choose mode (normal/vhost, default: normal): ").lower()
+            if mode != "normal" and mode != "vhost":
+                mode = "normal"
+            wordlist = input("Provide a wordlist (default=/usr/share/wordlists/seclists/Discovery/DNS/bitquark-subdomains-top100000.txt): ").strip()
+            if wordlist == "":
+                wordlist = "/usr/share/wordlists/seclists/Discovery/DNS/bitquark-subdomains-top100000.txt"
+            subdomains = web_enum.subdomain_discovery(session.target, scan_target, mode, wordlist, use_https)
+            session.data["subdomains"] = subdomains
+
+            if len(subdomains) != 0 and mode == "vhost":
+                add_vhost = input("[+] Found valid vhosts, do you want to add /etc/hosts entries? (Y/N) ").lower()
+                if add_vhost == "y":
+                    config_manager.add_vhost(session.target, session.domain, subdomains)
 
 def credentialed(session):
     pass
