@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-from tools import nmap, nxc, rpc, kerbrute_enum
-import os
+from tools import nmap, nxc, rpc, kerbrute_enum, kerberoast
 
 
 def non_credentialed(session):
@@ -47,7 +46,7 @@ def non_credentialed(session):
 
         session.data["nmap_output"] = output
         print("\n[+] Scan stored in session")
-        os.system("clear")
+        
 
 
     skip = ""
@@ -69,7 +68,7 @@ def non_credentialed(session):
                 save = input("[?] Save results? (y/N): ").lower() == "y"
                 output = nmap.kerberos_scan(session.target, session.domain.upper(), dict_path, save)
                 session.data["nmap_kerberos_output"] = output
-                os.system("clear")
+                
 
 
     print("===========================")
@@ -86,19 +85,20 @@ def non_credentialed(session):
         if null_session:
             session.data["smb_null_session"] = True
             print("[+] Anonymous access to smb granted")
-        else:
-            session.data["smb_null_session"] = False
-            print("[-] No anonymous smb access on target")
+            skip = ""
+            if session.data["smb_shares"]:
+                skip = input("[?] Found existent smb shares listed in session. Do you want to skip this step? (Y/N) ") .lower()
+            if skip != "y":
+                print("[+] Listing shares, password policy, users, and RIDs with anonymous credentials")
+                output = nxc.anonymous_enum(session.target)
+                if output == False:
+                    print("[-] Could not enumerate shares with anonymous credentials")
+                else:
+                    session.data["smb_null_session"] = False
+                    print("[-] No anonymous smb access on target")
 
 
-    skip = ""
-    if session.data["smb_shares"]:
-        skip = input("[?] Found existent smb shares listed in session. Do you want to skip this step? (Y/N) ") .lower()
-    if skip != "y":
-        print("[+] Listing shares, password policy, users, and RIDs with anonymous credentials")
-        output = nxc.anonymous_enum(session.target)
-        if output == False:
-            print("[-] Could not enumerate shares with anonymous credentials")
+    
 
     print("===========================")
     print("     RPCCLIENT TESTING     ")
@@ -116,6 +116,8 @@ def non_credentialed(session):
     skip = ""
     if session.data["users"]:
         skip = input("[?] Found existent usernames in session. Do you want to skip this step? (Y/N) ") .lower()
+    else:
+        skip = input("[?] Do you want to skip kerbrute enumeration? (Y/N) ").lower()
     if skip != "y":
         if not session.domain:
             print("[-] No domain/realm set for kerbrute enumeration")
@@ -127,6 +129,18 @@ def non_credentialed(session):
             if len(result["users"]) != 0:
                 print("[+] Saved found users into session")
                 session.data["users"] = result["users"]
+
+    skip = input("[?] Do you want to skip ASREP-Roasting and Kerberoasting unauthenticated? (Y/N) ")
+    if skip != "y":
+        wordlist = input("Provide a wordlist (default=/usr/share/seclists/Usernames/top-usernames-shortlist.txt): ").strip()
+        if wordlist == "":
+            wordlist = "/usr/share/seclists/Usernames/top-usernames-shortlist.txt"
+        print("[+] Trying Impacket GetNPUsers...")
+        result = kerberoast.unauthenticated_asrep(session.target, session.domain, wordlist)
+
+        print("[+] Trying Impacket GetUserSPNs...")
+        result = kerberoast.unauthenticated_kerberoast(session.target, session.domain)
+
 
 
 
