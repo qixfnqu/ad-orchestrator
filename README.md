@@ -1,3 +1,4 @@
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 # AD Orchestrator
 
 **AD Orchestrator** is an automated Active Directory enumeration framework.  
