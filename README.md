@@ -28,7 +28,7 @@ It provides an interactive CLI tool for performing external reconnaissance and e
 ## 🚀 Usage
 Once launched, you’ll see an interactive prompt:
 ```
-adflow >
+orchestrator >
 ```
 | Command                | Description                         |
 | ---------------------- | ----------------------------------- |

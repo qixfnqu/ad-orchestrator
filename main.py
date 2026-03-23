@@ -8,7 +8,7 @@ import shlex
 
 from core import config_manager, enum
 
-TOOL_NAME = "ADFlow"
+TOOL_NAME = "Orchestrator"
 
 def print_banner():
     banner = f"""
