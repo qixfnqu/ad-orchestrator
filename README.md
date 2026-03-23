@@ -1,7 +1,7 @@
 # AD Orchestrator
 
 **AD Orchestrator** is an automated Active Directory enumeration framework.  
-It provides an interactive CLI tool for performing internal reconnaissance and enumeration against Windows Active Directory environments. It centralizes session configuration, execution, and enumeration modules to streamline the discovery of AD metadata.
+It provides an interactive CLI tool for performing external reconnaissance and enumeration against Windows Active Directory environments. It centralizes session configuration, execution, and enumeration modules to streamline the discovery of AD metadata.
 
 > ⚠️ This tool is intended for **authorized security testing only**. Do not use it against systems you do not own or have explicit permission to test.
 
