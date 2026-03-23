@@ -61,6 +61,12 @@ Implementing automated reporting
 Improving session persistence
 Adding unit tests
 
+## 📝 TODO
+- Improve non-credentialed enumeration (especially web enum)
+- Add credentialed enumeration
+- Add session import/export functionality
+- Add interaction modules
+
 ## ⚠️ Disclaimer
 
 This tool is for ethical security testing only. Ensure you have explicit written authorization before performing any enumeration against a network or domain.
