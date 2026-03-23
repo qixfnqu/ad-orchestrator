@@ -31,9 +31,9 @@ rdns = false
 
     print("\n[+] Generated krb5.conf:\n")
     print(krb5_conf)
-    choice = input("Accept change? (Y/N) ")
+    choice = input("Accept change? (Y/N) ").lower()
 
-    if choice == "Y":
+    if choice == "y":
         if os.geteuid() == 0:
             try:
                 with open("/etc/krb5.conf", "w") as f:
@@ -52,8 +52,14 @@ rdns = false
         return
 
 
-def generate_etc_hosts(ip, hostname):
+def generate_etc_hosts(ip, hostname, dc=False):
     path = "/etc/hosts"
+    entry = ""
+
+    if dc:
+        entry = f"{ip}  dc01.{hostname} {hostname}\n"
+    else:
+        entry = f"{ip}  {hostname}\n"
 
     try:
         with open(path, "r") as f:
@@ -79,8 +85,8 @@ def generate_etc_hosts(ip, hostname):
 
             choice = input("[?] Overwrite this entry? (y/N): ").lower()
             if choice == "y":
-                new_lines.append(f"{ip}  dc01.{hostname} {hostname}\n")
-                print(f"[+] Updated entry → {ip}  dc01.{hostname} {hostname}")
+                new_lines.append(entry)
+                print(f"[+] Updated entry → {entry}")
             else:
                 new_lines.append(line)
                 print("[*] Keeping existing entry")
@@ -89,14 +95,14 @@ def generate_etc_hosts(ip, hostname):
             new_lines.append(line)
 
     if not entry_exists:
-        new_lines.append(f"\n{ip}  dc01.{hostname} {hostname}\n")
-        print(f"[+] Added new entry → {ip}  dc01.{hostname} {hostname}")
+        new_lines.append(f"\n{entry}\n")
+        print(f"[+] Added new entry → {entry}")
 
     if os.geteuid() != 0:
         return {
             "success": False,
             "error": "Not root",
-            "suggested": f"{ip}    {hostname}"
+            "suggested": f"{entry}"
         }
 
     try:

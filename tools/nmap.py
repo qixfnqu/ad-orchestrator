@@ -1,5 +1,19 @@
 import subprocess
 
+import re
+
+def parse_ports(output):
+    ports = []
+
+    for line in output.splitlines():
+        match = re.match(r"(\d+)\/\w+\s+open", line)
+        
+        if match:
+            port = int(match.group(1))
+            ports.append(port)
+
+    return ports
+
 def run_scan(cmd):
     process = subprocess.Popen(
         cmd,
@@ -15,8 +29,10 @@ def run_scan(cmd):
         print(line, end="")
         output += line
 
+    ports = parse_ports(output)
+
     process.wait()
-    return output
+    return [output, ports]
 
 
 def basic_scan(target, save=False):
@@ -48,4 +64,9 @@ def kerberos_scan(target,realm, dict_path, save=False):
     if save:
         cmd += f" -oN {target}_kerberos_scan.txt"
 
+    return run_scan(cmd)
+
+def web_scan(target):
+    cmd = f"nmap -sV -sC --script \"http-enum,http-wordpress*,http-drupal*,http-php-version,http-vuln*\" -p 80,443,8080,8443 --script-args http.useragent='Mozilla/5.0' {target}"
+    print(f"[+] Running {cmd} ...")
     return run_scan(cmd)

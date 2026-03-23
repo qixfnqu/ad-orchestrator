@@ -25,10 +25,12 @@ class Session:
         self.domain = None
         self.username = None
         self.password = None
+        self.dc_config = False
         self.data = {
             "users": [],
             "hosts": [],
             "creds": [],
+            "ports": [],
             "nmap_output" : "",
             "nmap_kerberos_output" : "",
             "smb_null_session": False,
@@ -69,7 +71,11 @@ def cmd_show(args):
     elif key == "data":
         print("\n[ Collected Data ]")
         for k, v in session.data.items():
-            print(f"{k}")
+            if isinstance(v, (list, dict) ):
+                size = len(v)
+                print(f"{k} : [{size if size > 0 else 'empty'}]")
+            else:    
+                print(f"{k}")
 
     elif key in session.data:
         print(f"\n[ {key} ]\n")
@@ -89,7 +95,8 @@ def cmd_show(args):
 
     else:
         print(f"[-] Unknown show option: {key}")
-        print("\n")
+        
+    print("\n")
 
 
 def cmd_run(args):
@@ -124,13 +131,15 @@ def cmd_config(args):
         domain = session.domain.lower()
     
         config_manager.generate_krb5(domain, dc_ip)
+        session.dc_config = True
 
-        choice = input("Do you want to modify /etc/hosts? (Y/N) ")
+        choice = input("Do you want to modify /etc/hosts? (Y/N) ").lower()
+        
 
-        if choice == "Y":
-            config_manager.generate_etc_hosts(dc_ip, domain)
+        if choice == "y":
+            config_manager.generate_etc_hosts(dc_ip, domain, True)
 
-        elif choice == "N":
+        elif choice == "n":
             print("[-] /etc/hosts not modified")
             return
         else: 
