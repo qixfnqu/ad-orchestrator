@@ -56,10 +56,10 @@ Use show options to view the current configuration.
 
 Contributions are welcome! Suggested improvements include:
 
-Adding support for additional enumeration modules
-Implementing automated reporting
-Improving session persistence
-Adding unit tests
+- Adding support for additional enumeration modules
+- Implementing automated reporting
+- Improving session persistence
+- Adding unit tests
 
 ## 📝 TODO
 - Improve non-credentialed enumeration (especially web enum)
