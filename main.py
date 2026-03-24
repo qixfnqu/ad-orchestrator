@@ -34,6 +34,7 @@ class Session:
         self.dc_config = False
         self.data = {
             "users": [],
+            "hashes": [],
             "hosts": [],
             "creds": [],
             "ports": [],
@@ -44,7 +45,8 @@ class Session:
             "smb_shares": [],
             "ldap_info" : "",
             "routes" : [],
-            "subdomains" : []
+            "subdomains" : [],
+            "services_with_access" : []
         }
 
 session = Session()

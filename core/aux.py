@@ -17,7 +17,7 @@ def get_service(port):
     return normalize_service(PORT_SERVICE_MAP.get(port, "unknown"))
 
 def get_services(ports):
-    return set(get_service(p) for p in ports)
+    return list(set(get_service(p) for p in ports))
 
 
 def has_service(ports, service):

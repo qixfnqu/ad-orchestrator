@@ -7,6 +7,9 @@ import re
 
 import time
 
+from colorama import init, Fore, Back, Style
+
+
 
 def is_probable_dc(ports):
     services = get_services(ports)
@@ -121,7 +124,7 @@ def non_credentialed(session):
         skip = input("[?] Found existent nmap kerberos scan data in session. Do you want to skip this step? (Y/N) ").lower()
 
     if skip != "y":
-        #Step 2
+        
         k_choice = input("[?] Do you want to perform kerberos-related script scan on the target? (Y/N) ").lower()
         if k_choice == "y":    
             if not session.domain:
@@ -329,11 +332,106 @@ def non_credentialed(session):
                 if add_vhost == "y":
                     config_manager.add_vhost(session.target, session.domain, subdomains)
 
-            if len(session.data["subdomains"]) != 0:
-                fingerprint = input("[?] Do you want to try fingerprinting versions on the found subdomains? (Y/N) ").lower()
-                if fingerprint == "y":
-                    for sub in session.data["subdomains"]:
-                        web_enum.fingerprint_version(sub, use_https)
 
 def credentialed(session):
-    pass
+    if not session.target:
+        print(Fore.RED + "[-] No target set" + Style.RESET_ALL)
+        return
+
+    if session.target not in session.data["hosts"]:
+        session.data["hosts"].append(session.target)
+
+    if not session.username or not session.password:
+        print(Fore.RED + "[-] No username/password set" + Style.RESET_ALL)
+        return
+
+    if len(session.data["users"]) == 0:
+        session.data["users"].append(session.username)
+
+    if len(session.data["creds"]) == 0:
+        session.data["creds"].append((session.username, session.password))
+
+    ## 1. NMAP SCANNING
+
+    print("\n")
+    print("===========================")
+    print("       NMAP SCANNING       ")
+    print("===========================")
+
+    skip = ""
+    nmap_output = ""
+    if session.data["nmap_output"] != "":
+        skip = input("[?] Found existent nmap output related data in session. Do you want to skip this step? (Y/N) ").lower()
+    else:
+        skip = input("[?] Depending on the scan type, this may take some time. Do you want to skip this step? (Y/N) ").lower()
+
+    if skip != "y":
+        #Step 1
+        print("Choose nmap scan type:")
+        print("    1) Basic")
+        print("    2) Extensive")
+
+        mode = input("> ").strip()
+
+
+        save = input("[?] Save results to a file? (Y/N): ").lower() == "y"
+
+        print("\n[+] Ready to run scan")
+        print(f"\tTarget: {session.target}")
+        print(f"\tMode: {'Extensive' if mode == '2' else 'Basic'}")
+
+        confirm = input("\n[?] Execute? (Y/N): ").lower()
+        if confirm not in ["", "y"]:
+            print("[*] Aborted")
+            return
+
+        print("[+] Running nmap scan...")
+        if mode == "2":
+            nmap_output = nmap.extensive_scan(session.target, save)
+        else:
+            nmap_output = nmap.basic_scan(session.target, save)
+
+        session.data["nmap_output"] = nmap_output[0]
+        session.data["ports"] = nmap_output[1]
+        print("\n[+] Scan stored in session")
+
+        services = get_services(session.data["ports"])
+        session.data["services"] = services
+
+    if is_probable_dc(session.data["ports"]) and not session.dc_config:
+        print("[+] Target looks like a Domain Controller")
+
+        choice = input("[?] Configure DC settings (krb5.conf, /etc/hosts)? (Y/N): ").lower()
+
+        if choice == "y":
+            dc_ip = session.target
+            if session.domain:
+                domain = session.domain.lower()
+            else:
+                domain = extract_domain(nmap_output[0]).lower()
+                if domain == None:
+                    print("[-] Couldn't automatically extract domain.")
+                else:
+                    session.domain = domain.lower()
+    
+                    config_manager.generate_krb5(domain, dc_ip)
+                    session.dc_config = True
+
+                    add_host = input("[?] Add a new /etc/hosts entry? (Y/N) ").lower()
+                    if add_host == "y":
+                        config_manager.generate_etc_hosts(dc_ip, domain, True)
+        
+
+    print("\n")
+    print("===========================")
+    print("      TRYING SERVICES      ")
+    print("===========================")    
+    skip = ""
+
+    if len(session.data["services_with_access"]) != 0:
+        skip = input("[?] Found services with access in session data, do you want to skip this part? (Y/N) ").lower()
+    
+    if skip != 'y':
+        result = nxc.test_access(session.target, session.data["ports"], session.username, session.password)
+        if len(result) != 0:
+            session.data["services_with_access"] = result

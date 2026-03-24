@@ -46,5 +46,15 @@ PORT_SERVICE_MAP = {
     27017: "mongodb"
 }
 
-
+NXC_SERVICE_MAP = {
+    445: "smb",
+    389: "ldap",
+    636: "ldap",   
+    5985: "winrm",
+    5986: "winrm",
+    3389: "rdp",
+    1433: "mssql",
+    22: "ssh",
+    21: "ftp",
+}
 

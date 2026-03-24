@@ -1,4 +1,5 @@
 import subprocess
+from core.config import NXC_SERVICE_MAP
 
 def anon_bind(target, ports):
 	idx = 0 

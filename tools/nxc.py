@@ -1,4 +1,6 @@
 import subprocess
+from core.config import NXC_SERVICE_MAP
+from colorama import Fore, Back, Style
 
 
 def check_null_session(target):
@@ -55,3 +57,78 @@ def anonymous_enum(target):
             return False
 
     return output
+
+
+def get_nxc_modules(ports):
+    modules = set()
+
+    for p in ports:
+        if p in NXC_SERVICE_MAP:
+            modules.add(NXC_SERVICE_MAP[p])
+
+    return list(modules)
+
+def test_access(target, ports, username="", password=""):
+    services_with_access = []
+    modules = get_nxc_modules(ports)
+
+    for module in modules:
+        cmd = f'nxc {module} {target} -u \'{username}\' -p \'{password}\''
+
+        process = subprocess.Popen(
+            cmd,
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True
+        )
+
+        output = ""
+
+        for line in process.stdout:
+            print(line, end="")
+            output += line
+
+        process.wait()
+
+        keywords = [
+        "Pwn3d",
+        "STATUS_SUCCESS",
+        "[+]"
+        ]
+
+        for k in keywords:
+            if k in output:
+                services_with_access.append(module)
+                print(Fore.GREEN + f"[+] User {username} has access to {module}" + Style.RESET_ALL)
+
+        cmd = f'nxc {module} {target} -u \'{username}\' -p \'{password}\' --local-auth'
+
+        process = subprocess.Popen(
+            cmd,
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True
+        )
+
+        output = ""
+
+        for line in process.stdout:
+            print(line, end="")
+            output += line
+
+        process.wait()
+
+        keywords = [
+        "Pwn3d",
+        "STATUS_SUCCESS",
+        "[+]"
+        ]
+
+        for k in keywords:
+            if k in output:
+                services_with_access.append(module)
+                print(Fore.GREEN + f"[+] User {username} has access to {module}" + Style.RESET_ALL)
+
+    return services_with_access
