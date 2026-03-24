@@ -100,7 +100,7 @@ def test_access(target, ports, username="", password=""):
         for k in keywords:
             if k in output:
                 services_with_access.append(module)
-                print(Fore.GREEN + f"[+] User {username} has access to {module}" + Style.RESET_ALL)
+                print(Fore.GREEN + Style.BRIGHT + f"[+] User {username} has access to {module} with password {password}" + Style.RESET_ALL)
 
         cmd = f'nxc {module} {target} -u \'{username}\' -p \'{password}\' --local-auth'
 
