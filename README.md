@@ -20,8 +20,8 @@ It provides an interactive CLI tool for performing external reconnaissance and e
 
 ## 🧾 Installation
    ```bash
-   git clone https://github.com/qixfnqu/ad-orchestrator.git
-   cd ad-orchestrator
+   git clone https://github.com/qixfnqu/adflow.git
+   cd adflow
    pip install -r requirements.txt
    python3 main.py
 ```
