@@ -1,7 +1,7 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-# AD Orchestrator
+# ADFlow
 
-**AD Orchestrator** is an automated Active Directory enumeration framework.  
+**ADFlow** is an automated Active Directory enumeration framework.  
 It provides an interactive CLI tool for performing external reconnaissance and enumeration against Windows Active Directory environments. It centralizes session configuration, execution, and enumeration modules to streamline the discovery of AD metadata.
 
 > ⚠️ This tool is intended for **authorized security testing only**. Do not use it against systems you do not own or have explicit permission to test.
@@ -28,14 +28,14 @@ It provides an interactive CLI tool for performing external reconnaissance and e
 ## 🚀 Usage
 Once launched, you’ll see an interactive prompt:
 ```
-orchestrator >
+➤ adflow [NoTarget 🛑] [NoDomain 🛑] [DC ❌] >
 ```
 | Command                | Description                         |
 | ---------------------- | ----------------------------------- |
 | `set <option> <value>` | Set session configuration           |
 | `show options`         | Show current configured options     |
 | `show data`            | Show collected data                 |
-| `run`                  | Start enumeration workflow          |
+| `run <value>`          | Start workflow                      |
 | `config dc`            | Generate domain config (krb5/hosts) |
 | `clear`                | Clear the terminal screen           |
 | `help`                 | Show help menu                      |
