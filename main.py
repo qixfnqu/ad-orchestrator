@@ -4,6 +4,8 @@ import os
 import sys
 import shlex
 
+from colorama import init, Fore, Back, Style
+
 
 
 from core import config_manager, enum
@@ -37,6 +39,7 @@ class Session:
             "nmap_kerberos_output" : "",
             "smb_null_session": False,
             "smb_shares": [],
+            "routes" : [],
             "subdomains" : []
         }
 
@@ -103,22 +106,31 @@ def cmd_show(args):
 
 
 def cmd_run(args):
+
+    if not args:
+        print("Usage: run <init/web>")    
+        return 
+
     os.system("clear")
-    print("\n[+] Starting interactive run\n")
+    if args[0] == "init":
+        print("\n[+] Starting interactive run\n")
 
-    
-    print("[?] Select enumeration mode:")
-    print("    1) Non-credentialed")
-    print("    2) Credentialed")
+        
+        print("[?] Select enumeration mode:")
+        print("    1) Non-credentialed")
+        print("    2) Credentialed")
 
-    mode = input("> ").strip()
+        mode = input("> ").strip()
 
-    if mode == "1":
-        enum.non_credentialed(session)
-    elif mode == "2":
-        enum.credentialed(session)
+        if mode == "1":
+            enum.non_credentialed(session)
+        elif mode == "2":
+            enum.credentialed(session)
+        else:
+            print("[-] Invalid option")
     else:
-        print("[-] Invalid option")
+        print(Fore.WHITE + Back.CYAN + Style.BRIGHT + "\n[*] MODE UNAVAILABLE. More operations modes in future\n")
+        return
 
 def cmd_config(args):
     if not args:
@@ -174,7 +186,7 @@ Available commands:
   set <option> <value>   Set session value
   show options           Show current config
   show data              Show collected data
-  run                    Execute workflow
+  run <init/web>         Execute workflow
   clear                  Clear screen
   help                   Show this help
   exit                   Quit
@@ -195,6 +207,7 @@ COMMANDS = {
 
 
 def main():
+    init(autoreset=True)
     os.system("clear")
     print_banner()
 

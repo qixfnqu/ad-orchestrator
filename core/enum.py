@@ -213,9 +213,13 @@ def non_credentialed(session):
     if skip != "y":
         add_host = input("[?] Do you want to add the ip entry to /etc/hosts? (Y/N) ").lower()
         if add_host == "y":
-            domain = input("Enter the domain name: ").strip().lower()
-            session.domain = domain
-            config_manager.generate_etc_hosts(session.target, domain)
+            if session.domain:
+                print("[+] Generating /etc/hosts with provided domain")
+            else:
+                domain = input("Enter the domain name: ").strip().lower()
+                session.domain = domain
+
+            config_manager.generate_etc_hosts(session.target, session.domain)
 
         scan_target = ""
         if session.domain:
@@ -231,7 +235,9 @@ def non_credentialed(session):
             wordlist = input("Provide a wordlist (default=/usr/share/wordlists/dirb/common.txt): ").strip()
             if wordlist == "":
                 wordlist = "/usr/share/wordlists/dirb/common.txt"
-            web_enum.fuzz(scan_target, use_https, wordlist)
+            routes = web_enum.fuzz(scan_target, use_https, wordlist)
+            if len(routes) != 0:
+                session.data["routes"] = list(set(session.data["routes"] + routes))
 
         web_scan = input("[?] Do you want to perform an additional web-related nmap scan? (Y/N) ").lower()
         if web_scan == 'y':
@@ -247,12 +253,19 @@ def non_credentialed(session):
             if wordlist == "":
                 wordlist = "/usr/share/wordlists/seclists/Discovery/DNS/bitquark-subdomains-top100000.txt"
             subdomains = web_enum.subdomain_discovery(session.target, scan_target, mode, wordlist, use_https)
-            session.data["subdomains"] = subdomains
+            session.data["subdomains"] = list(set(session.data["subdomains"] + subdomains))
+
 
             if len(subdomains) != 0 and mode == "vhost":
                 add_vhost = input("[+] Found valid vhosts, do you want to add /etc/hosts entries? (Y/N) ").lower()
                 if add_vhost == "y":
                     config_manager.add_vhost(session.target, session.domain, subdomains)
+
+            if len(session.data["subdomains"]) != 0:
+                fingerprint = input("[?] Do you want to try fingerprinting versions on the found subdomains? (Y/N) ").lower()
+                if fingerprint == "y":
+                    for sub in session.data["subdomains"]:
+                        web_enum.fingerprint_version(sub, use_https)
 
 def credentialed(session):
     pass

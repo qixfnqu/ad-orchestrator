@@ -1,5 +1,7 @@
 import os
 import shutil
+from colorama import Fore, Back, Style
+
 
 def generate_krb5(domain, dc_ip):
     realm = domain.upper()
@@ -79,9 +81,10 @@ def generate_etc_hosts(ip, hostname, dc=False):
 
         parts = stripped.split()
 
-        if parts[0] == ip:
+        if parts[0] == ip or hostname in parts[1:]:
             entry_exists = True
-            print(f"[!] Existing entry found: {stripped}")
+            print(Fore.RED + Style.BRIGHT + f"[!] Existing entry found: {stripped}")
+            print(Style.RESET_ALL)
 
             choice = input("[?] Overwrite this entry? (y/N): ").lower()
             if choice == "y":
