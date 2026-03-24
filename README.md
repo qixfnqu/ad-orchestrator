@@ -64,7 +64,7 @@ Contributions are welcome! Suggested improvements include:
 
 ## 📝 TODO
 - Improve non-credentialed enumeration (especially web enum)
-- Add credentialed enumeration
+- Improve credentialed enumeration
 - Add session import/export functionality
 - Add interaction modules
 
