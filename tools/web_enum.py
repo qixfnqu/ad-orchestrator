@@ -1,6 +1,7 @@
 import subprocess
 from colorama import Fore, Back, Style
 from core import aux
+from core.config import PORT_SERVICE_MAP
 
 
 def basic_web_enum(target, use_https=False):

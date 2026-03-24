@@ -3,7 +3,7 @@ import re
 
 
 def user_enum(domain, dc_ip, wordlist):
-    cmd = f"kerbrute -users {wordlist} -domain {domain} -dc-ip {dc_ip}"
+    cmd = f"kerbrute userenum  -d {domain} --dc {dc_ip} {wordlist}"
 
     process = subprocess.Popen(
         cmd,
@@ -25,10 +25,10 @@ def user_enum(domain, dc_ip, wordlist):
     users = []
 
     for line in output.splitlines():
-        if "Valid user" in line:
-            match = re.search(r"Valid user\s*=>\s*(\S+)", line)
+        if "valid username" in line.lower():
+            match = re.search(r"\[\+\]\s*VALID USERNAME:\s*(\S+)", line, re.IGNORECASE)
             if match:
-                users.append(match.group(1))
+                users.append(match.group(1).split("@")[0])
 
 
     return {
