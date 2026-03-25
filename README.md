@@ -63,10 +63,11 @@ Contributions are welcome! Suggested improvements include:
 - Adding unit tests
 
 ## 📝 TODO
-- Improve non-credentialed enumeration (especially web enum)
+- Improve non-credentialed enumeration
 - Improve credentialed enumeration
 - Add session import/export functionality
-- Add interaction modules
+- Add modules
+- Add web UI vor visualization/modification
 
 ## ⚠️ Disclaimer
 
