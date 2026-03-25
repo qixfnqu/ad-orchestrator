@@ -108,6 +108,7 @@ def test_access(target, ports, username="", password=""):
                 success = True
                 services_with_access.append(module)
                 print(Fore.GREEN + Style.BRIGHT + f"[+] User {username} has access to {module} with password {password}" + Style.RESET_ALL)
+                break
 
         if success == False:
             cmd = [
@@ -142,5 +143,6 @@ def test_access(target, ports, username="", password=""):
                 if k in output:
                     services_with_access.append(module)
                     print(Fore.GREEN + f"[+] User {username} has access to {module}" + Style.RESET_ALL)
+                    break
 
     return services_with_access
