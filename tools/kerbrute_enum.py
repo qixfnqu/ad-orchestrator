@@ -1,13 +1,18 @@
 import subprocess
 import re
 
-
 def user_enum(domain, dc_ip, wordlist):
-    cmd = f"kerbrute userenum  -d {domain} --dc {dc_ip} {wordlist}"
+
+    cmd = [
+        "kerbrute",
+        "userenum",
+        "-d", domain,
+        "--dc", dc_ip,
+        wordlist
+    ]
 
     process = subprocess.Popen(
         cmd,
-        shell=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True
@@ -21,7 +26,6 @@ def user_enum(domain, dc_ip, wordlist):
 
     process.wait()
 
- 
     users = []
 
     for line in output.splitlines():
@@ -29,7 +33,6 @@ def user_enum(domain, dc_ip, wordlist):
             match = re.search(r"\[\+\]\s*VALID USERNAME:\s*(\S+)", line, re.IGNORECASE)
             if match:
                 users.append(match.group(1).split("@")[0])
-
 
     return {
         "users": users,

@@ -1,28 +1,31 @@
 import subprocess
 
 def anon_session(target):
-	cmd = f"rpcclient -U \"\" -N pirate.htb -c \"enumdomusers;enumdomgroups;queryuser 500;srvinfo\""
 
-	process = subprocess.Popen(
-		cmd,
-		shell=True,
-		stdout=subprocess.PIPE,
-		stderr=subprocess.STDOUT,
-		text=True
-	)
+    cmd = [
+        "rpcclient",
+        "-U", "",
+        "-N",
+        target,
+        "-c", "enumdomusers;enumdomgroups;queryuser 500;srvinfo"
+    ]
 
-	output = ""
+    process = subprocess.Popen(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True
+    )
 
-	for line in process.stdout:
-		print(line, end="")
-		output += line
+    output = ""
 
-	keywords = [
-		"NT_STATUS_ACCESS_DENIED"
-	]
+    for line in process.stdout:
+        print(line, end="")
+        output += line
 
-	for k in keywords:
-		if k in output:
-			return False
+    process.wait()
 
-	return output
+    if "NT_STATUS_ACCESS_DENIED" in output:
+        return False
+
+    return output

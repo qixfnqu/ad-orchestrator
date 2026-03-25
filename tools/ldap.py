@@ -1,30 +1,33 @@
 import subprocess
-from core.config import NXC_SERVICE_MAP
 
 def anon_bind(target, ports):
-	idx = 0 
-	output = ""
+    for port in ports:
+        print(f"[+] Trying on port {port}")
 
-	while True:
-		print(f"[+] Trying on port {ports[idx]}")
+        cmd = [
+            "ldapsearch",
+            "-x",
+            "-H", f"ldap://{target}:{port}",
+            "-s", "base",
+            "(objectclass=*)"
+        ]
 
-		cmd = f"ldapsearch -x -H ldap://{target}:{ports[idx]} -s base \"(objectclass=*)\""
+        process = subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True
+        )
 
-		process = subprocess.Popen(
-			cmd,
-			shell=True,
-			stdout=subprocess.PIPE,
-			stderr=subprocess.STDOUT,
-			text=True
-		)
+        output = ""
 
-		for line in process.stdout:
-			print(line, end="")
-			output += line
+        for line in process.stdout:
+            print(line, end="")
+            output += line
 
-		idx += 1
+        process.wait()
 
-		if output != "ldap_result: Can't contact LDAP server (-1)":	
-			break
+        if "Can't contact LDAP server" not in output:
+            return output
 
-	return output
+    return None

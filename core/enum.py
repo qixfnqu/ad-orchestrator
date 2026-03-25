@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from tools import nmap, nxc, rpc, kerbrute_enum, kerberoast, web_enum, ldap
+from tools import nmap, nxc, rpc, kerbrute_enum, kerberoast, web_enum, ldap, smbclient
 from core import config_manager
 
 from core.aux import get_services, has_any_service
@@ -38,7 +38,7 @@ def extract_domain(nmap_output):
 def non_credentialed(session):
 
     if not session.target:
-        print("[-] No target set")
+        print(Fore.RED + "[-] No target set" + Style.RESET_ALL)
         return
 
     if session.target not in session.data["hosts"]:
@@ -49,9 +49,8 @@ def non_credentialed(session):
     ## 1. NMAP SCANNING    
 
     print("\n")
-    print("===========================")
-    print("       NMAP SCANNING       ")
-    print("===========================")
+    print(Fore.CYAN + "[      NMAP SCANNING      ]" + Style.RESET_ALL)
+    print("\n")
 
     skip = ""
     nmap_output = ""
@@ -105,7 +104,7 @@ def non_credentialed(session):
             else:
                 domain = extract_domain(nmap_output[0]).lower()
                 if domain == None:
-                    print("[-] Couldn't automatically extract domain.")
+                    print(Fore.RED + "[-] Couldn't automatically extract domain." + Style.RESET_ALL)
                 else:
                     session.domain = domain.lower()
     
@@ -128,7 +127,7 @@ def non_credentialed(session):
         k_choice = input("[?] Do you want to perform kerberos-related script scan on the target? (Y/N) ").lower()
         if k_choice == "y":    
             if not session.domain:
-                print("[-] No domain/realm set for the kerberos scan")
+                print(Fore.RED + "[-] No domain/realm set for the kerberos scan" + Style.RESET_ALL)
             else:
                 print("Choose a username wordlist path (Default: /usr/share/wordlists/common-usernames.txt")
                 dict_path = input("> ").strip()
@@ -143,9 +142,9 @@ def non_credentialed(session):
 
     time.sleep(0.5)
     print("\n")
-    print("===========================")
-    print("      LDAP ENUMERATION     ")
-    print("===========================")
+    print(Fore.CYAN + "[     LDAP ENUMERATION    ]" + Style.RESET_ALL)
+    print("\n")
+
 
     skip = ""
     if not any(s in session.data["services"] for s in ["ldap", "ldaps", "globalcatLDAP", "globalcatLDAPssl"]):
@@ -157,7 +156,7 @@ def non_credentialed(session):
         print("[+] Trying to recover information with ldapsearch...")
         output = ldap.anon_bind(session.target, [389, 636, 3268, 3269])
 
-        print("[+] Saving data to session")
+        print(Fore.GREEN + "[+] Saving data to session" + Style.RESET_ALL)
         session.data["ldap_info"] = output
 
 
@@ -165,9 +164,8 @@ def non_credentialed(session):
 
     time.sleep(0.5)
     print("\n")
-    print("===========================")
-    print("       SMB SCANNING        ")
-    print("===========================")
+    print(Fore.CYAN + "[      SMB SCANNING       ]" + Style.RESET_ALL)
+    print("\n")
 
     skip = ""
 
@@ -181,42 +179,41 @@ def non_credentialed(session):
         null_session = nxc.check_null_session(session.target)
         if null_session:
             session.data["smb_null_session"] = True
-            print("[+] Anonymous access to smb found")
+            print(Fore.GREEN + "[+] Anonymous access to smb found" + Style.RESET_ALL)
 
             skip = ""
             if session.data["smb_shares"]:
                 skip = input("[?] Found existent smb shares listed in session. Do you want to skip this step? (Y/N) ") .lower()
             if skip != "y":
                 print("[+] Listing shares, password policy, users, and RIDs with anonymous credentials")
-                output = nxc.anonymous_enum(session.target)
+                output = nxc.smb_enum(session.target)
                 if output == False:
-                    print("[-] Could not enumerate shares with anonymous credentials")
+                    print(Fore.RED + "[-] Could not enumerate shares with nxc, trying smbclient..." + Style.RESET_ALL)
+                    session.data["smb_shares"] = smbclient.list_shares(session.target)
                 else:
                     session.data["smb_null_session"] = False
-                    print("[-] No anonymous smb access on target")
+                    print(Fore.RED + "[-] No anonymous smb access on target" + Style.RESET_ALL)
 
 
     ## 4. RPCCLIENT SCANNING
     
     time.sleep(0.5)
     print("\n")
-    print("===========================")
-    print("     RPCCLIENT TESTING     ")
-    print("===========================")
+    print(Fore.CYAN + "[    RPCCLIENT TESTING    ]" + Style.RESET_ALL)
+    print("\n")
 
     print("[+] Testing commands with rpcclient null_session")
     output = rpc.anon_session(session.target)
     if output == False:
-        print("[-] Could not execute commands with anonymous credentials")
+        print(Fore.RED + "[-] Could not execute commands with anonymous credentials" + Style.RESET_ALL)
 
 
     ## 5. KERBEROS RELATED SCANNING
 
     time.sleep(0.5)
     print("\n")
-    print("===========================")
-    print("          KERBRUTE         ")
-    print("===========================")    
+    print(Fore.CYAN + "[        KERBRUTE         ]" + Style.RESET_ALL)
+    print("\n")   
     skip = ""
 
     if "kerberos" not in session.data["services"]:
@@ -228,7 +225,7 @@ def non_credentialed(session):
 
     if skip != "y":
         if not session.domain:
-            print("[-] No domain/realm set for kerbrute enumeration")
+            print(Fore.RED + "[-] No domain/realm set for kerbrute enumeration" + Style.RESET_ALL)
         else:
             wordlist = input("Provide a wordlist (default=/usr/share/seclists/Usernames/top-usernames-shortlist.txt): ").strip()
             if wordlist == "":
@@ -236,15 +233,14 @@ def non_credentialed(session):
             result = kerbrute_enum.user_enum(session.domain, session.target, wordlist)
 
             if len(result["users"]) != 0:
-                print("[+] Saved found users into session")
+                print(Fore.GREEN + "[+] Saved found users into session" + Style.RESET_ALL)
                 session.data["users"] = list(set(session.data["users"] + result["users"]))
 
 
     time.sleep(0.5)
     print("\n")
-    print("===========================")
-    print("       KERBEROASTING       ")
-    print("===========================")
+    print(Fore.CYAN + "[      KERBEROASTING      ]" + Style.RESET_ALL)
+    print("\n")
     skip = ""
 
     if "kerberos" not in session.data["services"]:
@@ -254,7 +250,7 @@ def non_credentialed(session):
 
     if skip != "y":
         if not session.domain:
-            print("[-] No domain/realm set for kerbrute enumeration")
+            print(Fore.RED + "[-] No domain/realm set for kerbrute enumeration" + Style.RESET_ALL)
         else:    
             wordlist = input("Provide a wordlist (default=/usr/share/seclists/Usernames/top-usernames-shortlist.txt): ").strip()
             if wordlist == "":
@@ -270,9 +266,8 @@ def non_credentialed(session):
 
     time.sleep(0.5)
     print("\n")
-    print("===========================")
-    print("      WEB ENUMERATION      ")
-    print("===========================")
+    print(Fore.CYAN + "[      WEB ENUMERATION     ]" + Style.RESET_ALL)
+    print("\n")
     skip = ""
 
     if not any(s in session.data["services"] for s in ["http", "https"]):
@@ -354,9 +349,8 @@ def credentialed(session):
     ## 1. NMAP SCANNING
 
     print("\n")
-    print("===========================")
-    print("       NMAP SCANNING       ")
-    print("===========================")
+    print(Fore.CYAN + "[      NMAP SCANNING      ]" + Style.RESET_ALL)
+    print("\n")
 
     skip = ""
     nmap_output = ""
@@ -410,7 +404,7 @@ def credentialed(session):
             else:
                 domain = extract_domain(nmap_output[0]).lower()
                 if domain == None:
-                    print("[-] Couldn't automatically extract domain.")
+                    print(Fore.RED + "[-] Couldn't automatically extract domain." + Style.RESET_ALL)
                 else:
                     session.domain = domain.lower()
     
@@ -423,9 +417,8 @@ def credentialed(session):
         
 
     print("\n")
-    print("===========================")
-    print("      TRYING SERVICES      ")
-    print("===========================")    
+    print(Fore.CYAN + "[      TRYING SERVICES      ]" + Style.RESET_ALL)
+    print("\n")    
     skip = ""
 
     if len(session.data["services_with_access"]) != 0:

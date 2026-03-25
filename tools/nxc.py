@@ -28,12 +28,20 @@ def check_null_session(target):
     return False
 
 
-def anonymous_enum(target):
-    cmd = f'nxc smb {target} -u "" -p "" --shares --users --pass-pol --rid-brute'
+def smb_enum(target, username="", password=""):
+
+    cmd = [
+        "nxc", "smb", target,
+        "-u", username,
+        "-p", password,
+        "--shares",
+        "--users",
+        "--pass-pol",
+        "--rid-brute"
+    ]
 
     process = subprocess.Popen(
         cmd,
-        shell=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True
@@ -47,14 +55,8 @@ def anonymous_enum(target):
 
     process.wait()
 
-    keywords = [
-        "STATUS_ACCESS_DENIED",
-        "Error enumerating shares"
-    ]
-
-    for k in keywords:
-        if k in output:
-            return False
+    if "STATUS_ACCESS_DENIED" in output:
+        return False
 
     return output
 
@@ -73,11 +75,14 @@ def test_access(target, ports, username="", password=""):
     modules = get_nxc_modules(ports)
 
     for module in modules:
-        cmd = f'nxc {module} {target} -u \'{username}\' -p \'{password}\''
+        cmd = [
+            "nxc", module, target,
+            "-u", username,
+            "-p", password
+        ]
 
         process = subprocess.Popen(
             cmd,
-            shell=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True
@@ -97,38 +102,45 @@ def test_access(target, ports, username="", password=""):
         "[+]"
         ]
 
+        success = False
         for k in keywords:
             if k in output:
+                success = True
                 services_with_access.append(module)
                 print(Fore.GREEN + Style.BRIGHT + f"[+] User {username} has access to {module} with password {password}" + Style.RESET_ALL)
 
-        cmd = f'nxc {module} {target} -u \'{username}\' -p \'{password}\' --local-auth'
+        if success == False:
+            cmd = [
+                "nxc", module, target,
+                "-u", username,
+                "-p", password,
+                "--local-auth"
+            ]
 
-        process = subprocess.Popen(
-            cmd,
-            shell=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True
-        )
+            process = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True
+            )
 
-        output = ""
+            output = ""
 
-        for line in process.stdout:
-            print(line, end="")
-            output += line
+            for line in process.stdout:
+                print(line, end="")
+                output += line
 
-        process.wait()
+            process.wait()
 
-        keywords = [
-        "Pwn3d",
-        "STATUS_SUCCESS",
-        "[+]"
-        ]
+            keywords = [
+            "Pwn3d",
+            "STATUS_SUCCESS",
+            "[+]"
+            ]
 
-        for k in keywords:
-            if k in output:
-                services_with_access.append(module)
-                print(Fore.GREEN + f"[+] User {username} has access to {module}" + Style.RESET_ALL)
+            for k in keywords:
+                if k in output:
+                    services_with_access.append(module)
+                    print(Fore.GREEN + f"[+] User {username} has access to {module}" + Style.RESET_ALL)
 
     return services_with_access

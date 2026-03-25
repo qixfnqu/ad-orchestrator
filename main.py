@@ -170,7 +170,7 @@ def cmd_config(args):
   
     if args[0] == "dc":
         if session.target is None or session.domain is None: 
-            print("[-] Establish a valid target and domain")
+            print(Fore.RED + "[-] Establish a valid target and domain" + Style.RESET_ALL)
             return
 
         dc_ip = session.target
