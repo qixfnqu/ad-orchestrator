@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from tools import nmap, nxc, rpc, kerbrute_enum, kerberoast, web_enum, ldap, smbclient
+from tools import nmap, nxc, rpc, kerbrute_enum, kerberoast, web_enum, ldap, smbclient, bloodhound_handler
 from core import config_manager
 from core.aux import get_services
 
@@ -100,10 +100,22 @@ def step_dc_setup(session):
         config_manager.generate_etc_hosts(session.target, domain, True)
 
 
-def step_ldap(session):
+def step_ldap_anon(session):
     output = ldap.anon_bind(session.target, [389, 636, 3268, 3269])
     session.data["ldap_info"] = output
 
+def step_ldap_cred(session):
+    if not session.domain:
+        setdomain = confirm("[-] No domain established. Do you want to set it manually? (Y/N) ")
+        if setdomain:
+            domain = input("Domain name: ").strip()
+            session.domain = domain
+        else:
+            print(Fore.RED + "[-] Domain required for this step" + Style.RESET_ALL)
+            return
+
+    output = ldap.cred_bind(session.target, [389, 636, 3268, 3269], session.username, session.password, session.domain)
+    session.data["ldap_info"] = output
 
 def step_smb(session):
     if not nxc.check_null_session(session.target):
@@ -149,8 +161,22 @@ def step_kerberoast(session):
 
 
 def step_web(session):
-    scan_target = session.domain or session.target
     use_https = "https" in session.data.get("services", [])
+
+    if session.domain:
+        add_entry = confirm("Do you want to add an /etc/hosts entry for the target? (Y/N) ")
+        if add_entry:
+            config_manager.generate_etc_hosts(session.target, session.domain)
+    else:
+        set_domain = confirm("Do you want to set a domain name for the target? (Y/N) ")
+        if set_domain:
+            domain = input("Domain name: ").lower().strip()
+            session.domain = domain
+        add_entry = confirm("Do you want to add an /etc/hosts entry for the target? (Y/N) ")
+        if add_entry:
+            config_manager.generate_etc_hosts(session.target, session.domain)
+
+    scan_target = session.domain or session.target
 
     web_enum.basic_web_enum(scan_target, use_https)
 
@@ -159,6 +185,29 @@ def step_web(session):
             "/usr/share/wordlists/dirb/common.txt"
         routes = web_enum.fuzz(scan_target, use_https, wordlist)
         session.data["routes"] = list(set(session.data["routes"] + routes))
+
+    if confirm("Enumerate subdomains? (Y/N): "):
+        mode = input("Choose mode (normal/vhost): ").strip()
+        if mode != "normal" and mode != "vhost":
+            mode = "normal"
+
+        wordlist = input("Wordlist (default=/usr/share/wordlists/seclists/Discovery/DNS/bitquark-subdomains-top100000.txt: ").strip() or \
+            "/usr/share/wordlists/seclists/Discovery/DNS/bitquark-subdomains-top100000.txt"
+        subdomains = web_enum.subdomain_discovery(scan_target, session.domain, mode, wordlist, use_https)
+        session.data["subdomains"] = list(set(session.data["subdomains"] + subdomains))
+
+def step_bloodhound(session):
+    if not session.domain:
+        set_domain = confirm("[?] No domain set, do you want to manually set it? (Y/N) ")
+        if set_domain:
+            domain = input("Domain name: ").lower().strip()
+            session.domain = domain
+        else:
+            print(Fore.RED + "[-] Domain required for bloodhound scan")
+            return
+
+    bloodhound_handler.bh_enum(session.target, session.domain, session.username, session.password)
+
 
 
 # ----------------------
@@ -204,7 +253,7 @@ def non_credentialed(session):
     run_step(
         "LDAP",
         skip,
-        lambda: step_ldap(session)
+        lambda: step_ldap_anon(session)
     )
 
     
@@ -238,7 +287,7 @@ def non_credentialed(session):
         lambda: step_kerberoast(session)
     )
 
-    if any(s in session.data["services"] for s in ["http", "https"]):
+    if not any(s in session.data["services"] for s in ["http", "https"]):
         skip = ask_skip("[?] No http found on target? Do you want to skip web enum step? (Y/N) ")
     else:
         skip = ask_skip("[?] Do you want to skip web enum step? (Y/N) ")
@@ -290,4 +339,15 @@ def credentialed(session):
                 session.password
             )
         })
+    )
+
+    if not any(s in session.data["services"] for s in ["ldap", "ldaps"]):
+        skip = ask_skip("[?] No ldap found on target? Do you want to skip bloodhound enum step? (Y/N) ")
+    else:
+        skip = ask_skip("[?] Do you want to skip bloodhound enum step? (Y/N)")
+
+    run_step(
+        "BLOODHOUND",
+        skip,
+        lambda: step_bloodhound(session)
     )

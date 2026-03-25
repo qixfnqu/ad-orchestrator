@@ -63,9 +63,11 @@ def fuzz(target, use_https, wordlist):
 			process.terminate()
 			process.wait()
 
-		print("\n")
+		print("\n")	
+		print(Fore.GREEN + f"[+] Found {len(routes)} route(s)" + Style.RESET_ALL)		
 		return routes
 
+	print(Fore.GREEN + f"[+] Found {len(routes)} route(s)")
 	return routes
 
 
@@ -77,6 +79,7 @@ def subdomain_discovery(target, domain, mode, wordlist, use_https=False):
 	if mode == "normal":
 		cmd = ["subfinder", "-d", domain, "-silent"]
 		print(f"[+] Searching subdomains for {proto}://{target}")
+
 	elif mode == "vhost":
 		cmd = [
     		"ffuf",
@@ -132,8 +135,10 @@ def subdomain_discovery(target, domain, mode, wordlist, use_https=False):
 			process.wait()
 
 			print("\n")
+			print(Fore.GREEN + f"[+] Found {len(subdomains)} subdomain(s)" + Style.RESET_ALL)
 			return list(subdomains)	
 	
+	print(Fore.GREEN + f"[+] Found {len(subdomains)} subdomain(s)" + Style.RESET_ALL)
 	return list(subdomains)
 
 def fingerprint_version(target, use_https=False):
