@@ -65,7 +65,7 @@ Contributions are welcome! Suggested improvements include:
 ## 📝 TODO
 - Improve non-credentialed enumeration
 - Improve credentialed enumeration
-- Add session import/export functionality
+- Improve session import/export functionality
 - Add modules
 - Add web UI vor visualization/modification
 

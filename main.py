@@ -6,8 +6,8 @@ import shlex
 
 from colorama import init, Fore, Back, Style
 from core import aux
-
-
+from core.session_manager import Session
+import json
 
 from core import config_manager, enum
 
@@ -24,31 +24,6 @@ def print_banner():
 """
     print(banner)
 
-
-
-class Session:
-    def __init__(self):
-        self.target = None
-        self.domain = None
-        self.username = None
-        self.password = None
-        self.dc_config = False
-        self.data = {
-            "users": [],
-            "hashes": [],
-            "hosts": [],
-            "creds": [],
-            "ports": [],
-            "services": [],
-            "nmap_output" : "",
-            "nmap_kerberos_output" : "",
-            "smb_null_session": False,
-            "smb_shares": [],
-            "ldap_info" : "",
-            "routes" : [],
-            "subdomains" : [],
-            "services_with_access" : []
-        }
 
 session = Session()
 
@@ -198,7 +173,39 @@ def cmd_config(args):
             print("[-] /etc/hosts not modified")
             return
 
-        
+
+def cmd_save(args):
+    filename = "session.json"
+
+    try:
+        with open(filename, "w") as f:
+            json.dump(session.to_dict(), f, indent=4)
+
+        print(f"[+] Session saved to {filename}")
+
+    except Exception as e:
+        print(Fore.RED + f"[-] Failed to save session: {e}" + Style.RESET_ALL) 
+
+def cmd_load(args):
+    if not args:
+        print("Usage: load <file>")
+        return
+
+    filename = args[0]
+
+    if not os.path.exists(filename):
+        print(Fore.RED + "[-] File not found" + Style.RESET_ALL)
+        return
+
+    try:
+        with open(filename, "r") as f:
+            data = json.load(f)
+
+        session.from_dict(data)
+        print(f"[+] Session loaded from {filename}")
+
+    except Exception as e:
+        print(Fore.RED + f"[-] Failed to load session: {e}" + Style.RESET_ALL)
 
         
 
@@ -225,6 +232,8 @@ Available commands:
   run <init/web>         Execute workflow
   clear                  Clear screen
   help                   Show this help
+  save                   Save current session
+  load <filename>        Load a session file
   exit                   Quit
 
 """)
@@ -238,7 +247,9 @@ COMMANDS = {
     "exit": cmd_exit,
     "quit" : cmd_exit,
     "help": cmd_help,
-    "config": cmd_config
+    "config": cmd_config,
+    "save" : cmd_save,
+    "load" : cmd_load
 }
 
 def get_prompt():
