@@ -1,5 +1,6 @@
 import subprocess
 from colorama import Fore, Back, Style
+from core import aux
 
 
 def parse_smb_shares(output):
@@ -36,20 +37,12 @@ def parse_smb_shares(output):
 
 
 def list_shares(target, username="", password=""):
-	if username == "" or password == "":
-		cmd = ["smbclient", "-L", f"\\\\{target}\\", "-N"]
+    if username == "" or password == "":
+        cmd = ["smbclient", "-L", f"\\\\{target}\\", "-N"]
+    else:
+        cmd = ["smbclient", "-L", f"\\\\{target}\\", "-U", f"{username}%{password}"]
 
+    output = aux.run_command(cmd)
 
-	process = subprocess.run(
-		cmd,
-		capture_output=True,
- 		text=True
-	)
-
-	output = ""
-	for line in process.stdout:
-		print(line, end="")
-		output += line
-
-	shares = parse_smb_shares(output)
-	return shares
+    shares = parse_smb_shares(output)
+    return shares

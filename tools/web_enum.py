@@ -15,18 +15,8 @@ def basic_web_enum(target, use_https=False):
 	print("[+] Running WhatWeb...")
 	cmd = ["whatweb", f"{proto}://{target}"]
 
-	process = subprocess.Popen(
-		cmd,
-		stdout=subprocess.PIPE,
-		stderr=subprocess.STDOUT,
-		text=True
-	)
-
-	output = ""
-
-	for line in process.stdout:
-		print(line, end="")
-		output += line
+	output = aux.run_command(cmd)
+	return output
 
 def fuzz(target, use_https, wordlist):
 	proto = "https" if use_https else "http"

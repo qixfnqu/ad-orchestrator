@@ -125,8 +125,21 @@ def step_smb(session):
     session.data["smb_null_session"] = True
 
     output = nxc.smb_enum(session.target)
-    if not output:
+    if not output["shares"]:
         session.data["smb_shares"] = smbclient.list_shares(session.target)
+    else:
+        session.data["smb_shares"] = output["shares"]
+
+    if output["users"]:
+        session.data["users"] = output["users"]
+
+def step_smb_cred(session):
+    output = nxc.smb_enum(session.target, session.username, session.password)
+    if output["shares"]:
+        session.data["smb_shares"] = output["shares"]
+
+    if output["users"]:
+        session.data["users"] = output["users"]
 
 
 def step_rpc(session):
@@ -157,7 +170,9 @@ def step_kerberoast(session):
         "/usr/share/seclists/Usernames/top-usernames-shortlist.txt"
 
     kerberoast.unauthenticated_asrep(session.target, session.domain, wordlist)
+    print("\n")
     kerberoast.unauthenticated_kerberoast(session.target, session.domain)
+ 
 
 
 def step_web(session):
@@ -340,6 +355,18 @@ def credentialed(session):
             )
         })
     )
+
+    if "smb" not in session.data["services"]:
+        skip = ask_skip("[?] No smb found on target? Do you want to skip smb enum step? (Y/N) ")
+    else:
+        skip = ask_skip("[?] Do you want to skip smb enum step? (Y/N)")
+
+    run_step(
+        "SMB",
+        skip,
+        lambda: step_smb_cred(session)
+    )
+
 
     if not any(s in session.data["services"] for s in ["ldap", "ldaps"]):
         skip = ask_skip("[?] No ldap found on target? Do you want to skip bloodhound enum step? (Y/N) ")

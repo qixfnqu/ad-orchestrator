@@ -1,4 +1,6 @@
 import subprocess
+from core import aux
+
 
 def anon_session(target):
 
@@ -10,20 +12,7 @@ def anon_session(target):
         "-c", "enumdomusers;enumdomgroups;queryuser 500;srvinfo"
     ]
 
-    process = subprocess.Popen(
-        cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True
-    )
-
-    output = ""
-
-    for line in process.stdout:
-        print(line, end="")
-        output += line
-
-    process.wait()
+    output = aux.run_command(cmd)
 
     if "NT_STATUS_ACCESS_DENIED" in output:
         return False

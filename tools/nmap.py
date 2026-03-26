@@ -1,6 +1,8 @@
 import subprocess
-
 import re
+
+from core import aux
+
 
 def parse_ports(output):
     ports = []
@@ -15,21 +17,7 @@ def parse_ports(output):
     return ports
 
 def run_scan(cmd):
-    process = subprocess.Popen(
-        cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True
-    )
-
-    output = ""
-
-    for line in process.stdout:
-        print(line, end="")
-        output += line
-
-    process.wait()
-
+    output = aux.run_command(cmd)
     ports = parse_ports(output)
 
     return [output, ports]

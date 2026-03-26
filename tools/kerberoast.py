@@ -1,4 +1,5 @@
 import subprocess
+from core import aux
 
 def unauthenticated_asrep(target, domain, wordlist):
 
@@ -11,19 +12,7 @@ def unauthenticated_asrep(target, domain, wordlist):
         "-no-pass"
     ]
 
-    process = subprocess.Popen(
-        cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True
-    )
-
-    output = ""
-
-    for line in process.stdout:
-        print(line, end="")
-        output += line
-
+    output = aux.run_command(cmd)
     return output
 
 def unauthenticated_kerberoast(target, domain):
@@ -35,17 +24,6 @@ def unauthenticated_kerberoast(target, domain):
         f"{domain.upper()}/"
     ]
 
-    process = subprocess.Popen(
-        cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True
-    )
-
-    output = ""
-
-    for line in process.stdout:
-        print(line, end="")
-        output += line
+    output = aux.run_command(cmd)
 
     return output

@@ -5,6 +5,7 @@ import sys
 import shlex
 
 from colorama import init, Fore, Back, Style
+from core import aux
 
 
 
@@ -58,6 +59,10 @@ def cmd_set(args):
         return
 
     key, value = args[0], args[1]
+
+    if key == "target" and not aux.is_valid_target(value):
+        print(Fore.RED + "[-] Invalid format for target" + Style.RESET_ALL)
+        return
 
     if hasattr(session, key):
         setattr(session, key, value)

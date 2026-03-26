@@ -1,6 +1,8 @@
 import re
 from core.config import PORT_SERVICE_MAP
 
+from subprocess import Popen, PIPE, STDOUT
+
 
 def strip_ansi(text):
     ansi_escape = re.compile(r'\x1B\[[0-?]*[ -/]*[@-~]')
@@ -26,3 +28,17 @@ def has_service(ports, service):
 def has_any_service(ports, services):
     detected = get_services(ports)
     return any(s in detected for s in services)
+
+def is_valid_target(value):
+    ip = re.match(r"^\d{1,3}(\.\d{1,3}){3}$", value)
+    hostname = re.match(r"^[a-zA-Z0-9\-\.]+$", value)
+    return bool(ip or hostname)
+
+def run_command(cmd, cwd=None) -> str:
+    process = Popen(cmd, stdout=PIPE, stderr=STDOUT, text=True, cwd=cwd)
+    output = ""
+    for line in process.stdout:
+        print(line, end="")
+        output += line
+    process.wait()
+    return output

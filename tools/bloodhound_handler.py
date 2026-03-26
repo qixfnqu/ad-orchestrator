@@ -2,6 +2,7 @@ import subprocess
 import os
 
 from colorama import Fore, Back, Style
+from core import aux
 
 
 def bh_enum(target, domain, username, password):
@@ -22,20 +23,7 @@ def bh_enum(target, domain, username, password):
 	]
 
 	try:
-		process = subprocess.Popen(
-	        cmd,
-	        stdout=subprocess.PIPE,
-	        stderr=subprocess.STDOUT,
-	        text=True,
-	        cwd=output_dir 
-	    )
-
-		output = ""
-
-		for line in process.stdout:
-			print(line, end="")
-			output += line
-		process.wait()
+		output = aux.run_command(cmd, output_dir)
 
 	except Exception as e:
 		print(Fore.RED + f"[-] BloodHound scan failed with: {e}" + Style.RESET_ALL)

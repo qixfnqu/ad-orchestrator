@@ -1,5 +1,7 @@
 import subprocess
 import re
+from core import aux
+
 
 def user_enum(domain, dc_ip, wordlist):
 
@@ -11,20 +13,7 @@ def user_enum(domain, dc_ip, wordlist):
         wordlist
     ]
 
-    process = subprocess.Popen(
-        cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True
-    )
-
-    output = ""
-
-    for line in process.stdout:
-        print(line, end="")
-        output += line
-
-    process.wait()
+    output = aux.run_command(cmd)
 
     users = []
 

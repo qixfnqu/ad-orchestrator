@@ -1,4 +1,5 @@
 import subprocess
+from core import aux
 
 def anon_bind(target, ports):
     for port in ports:
@@ -12,20 +13,7 @@ def anon_bind(target, ports):
             "(objectclass=*)"
         ]
 
-        process = subprocess.Popen(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True
-        )
-
-        output = ""
-
-        for line in process.stdout:
-            print(line, end="")
-            output += line
-
-        process.wait()
+        output = aux.run_command(cmd)
 
         if "Can't contact LDAP server" not in output:
             return output
@@ -48,20 +36,7 @@ def cred_bind(target, ports, username, password, domain):
             "distinguishedName,samAccountName,userPrincipalName,sPN,dontReqPreAuth,userAccountControl,memberOf,msDS-AllowedToDelegateTo"
         ]
 
-        process = subprocess.Popen(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True
-        )
-
-        output = ""
-
-        for line in process.stdout:
-            print(line, end="")
-            output += line
-
-        process.wait()
+        output = aux.run_command(cmd)
 
         if "Can't contact LDAP server" not in output:
             return output

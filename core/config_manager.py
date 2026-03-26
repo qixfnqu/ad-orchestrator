@@ -45,7 +45,7 @@ rdns = false
                 print(f"[-] Failed to write krb5.conf: {e}")
         else:
             print("[!] Not running as root → cannot write /etc/krb5.conf")
-    elif choice == "N":
+    elif choice == "n":
         print("/etc/krb5.conf not updated")
         return
     else:
@@ -86,7 +86,7 @@ def generate_etc_hosts(ip, hostname, dc=False):
             print(Fore.RED + Style.BRIGHT + f"[!] Existing entry found: {stripped}")
             print(Style.RESET_ALL)
 
-            choice = input("[?] Overwrite this entry? (y/N): ").lower()
+            choice = input("[?] Overwrite this entry? (Y/N): ").lower()
             if choice == "y":
                 new_lines.append(entry)
                 print(f"[+] Updated entry → {entry}")
