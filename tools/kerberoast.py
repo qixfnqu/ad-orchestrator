@@ -15,7 +15,7 @@ def unauthenticated_asrep(target, domain, wordlist):
     output = aux.run_command(cmd)
     return output
 
-def unauthenticated_kerberoast(target, domain):
+def kerberoast(target, domain):
 
     cmd = [
         "impacket-GetUserSPNs",

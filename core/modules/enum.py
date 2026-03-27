@@ -172,7 +172,6 @@ def step_kerberoast(session):
 
     kerberoast.unauthenticated_asrep(session.target, session.domain, wordlist)
     print("\n")
-    kerberoast.unauthenticated_kerberoast(session.target, session.domain)
  
 
 
