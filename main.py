@@ -233,7 +233,7 @@ def cmd_start_ui(args):
         print(Fore.RED + Style.BRIGHT + "[!] Web UI already running" + Style.RESET_ALL)
         return
 
-    print(Fore.GREEN + Style.BRIGHT + "[+] Starting Web UI on port 5000..."+ Style.RESET_ALL)
+    print(Fore.GREEN + Style.BRIGHT + "[+] Starting Web UI on  http://0.0.0.0:5000 ..."+ Style.RESET_ALL)
     web_ui_instance = WebUIThread(session)
     web_ui_instance.start()
 

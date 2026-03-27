@@ -12,6 +12,7 @@ class Session:
             "users": [],
             "hashes": [],
             "hosts": [],
+            "computers": [],
             "creds": [],
             "ports": [],
             "services": [],

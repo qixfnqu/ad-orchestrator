@@ -115,7 +115,8 @@ def step_ldap_cred(session):
             return
 
     output = ldap.cred_bind(session.target, [389, 636, 3268, 3269], session.username, session.password, session.domain)
-    session.data["ldap_info"] = output
+    session.data["users"] = list(set(session.data["users"] + output[0]))
+    session.data["computers"] = list(set(session.data["computers"] + output[1]))
 
 def step_smb(session):
     if not nxc.check_null_session(session.target):
@@ -136,10 +137,10 @@ def step_smb(session):
 def step_smb_cred(session):
     output = nxc.smb_enum(session.target, session.username, session.password)
     if output["shares"]:
-        session.data["smb_shares"] = output["shares"]
+        session.data["smb_shares"] = list(set(session.data["smb_shares"] + output["shares"]))
 
     if output["users"]:
-        session.data["users"] = output["users"]
+        session.data["users"] = list(set(session.data["users"] + output["users"]))
 
 
 def step_rpc(session):
@@ -359,6 +360,18 @@ def credentialed(session):
                 session.password
             )
         })
+    )
+
+
+    if not any(s in session.data["services"] for s in ["ldap", "ldaps"]):
+        skip = ask_skip("[?] No ldap found on target? Do you want to skip ldap enum step? (Y/N) ")
+    else:
+        skip = ask_skip("[?] Do you want to skip ldap enum step? (Y/N)")
+
+    run_step(
+        "LDAP",
+        skip,
+        lambda: step_ldap_cred(session)
     )
 
     if "smb" not in session.data["services"]:
