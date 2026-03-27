@@ -4,14 +4,21 @@ import os
 import sys
 import shlex
 
+import threading
+
 from colorama import init, Fore, Back, Style
 from core import aux
 from core.session_manager import Session
 import json
 
-from core import config_manager, enum
+from core import config_manager
+from core.modules import enum
+from core.web_ui.web_ui import WebUIThread
+
 
 TOOL_NAME = "adflow"
+web_ui_instance = None
+
 
 def print_banner():
     banner = f"""
@@ -173,6 +180,10 @@ def cmd_config(args):
             print("[-] /etc/hosts not modified")
             return
 
+    if args[0] == "host":
+        print(Fore.YELLOW + "[-] Will be developed in future" + Style.RESET_ALL)
+        return
+
 
 def cmd_save(args):
     filename = "session.json"
@@ -201,7 +212,10 @@ def cmd_load(args):
         with open(filename, "r") as f:
             data = json.load(f)
 
-        session.from_dict(data)
+        if session.from_dict(data)["error"]:
+            print(Fore.RED + f"[-] Error loading the session: {session.from_dict(data)["error"]}" + Style.RESET_ALL)
+            return 
+
         print(f"[+] Session loaded from {filename}")
 
     except Exception as e:
@@ -209,8 +223,20 @@ def cmd_load(args):
 
         
 
-    if args[0] == "host":
-        pass
+def cmd_start_ui(args):
+    global web_ui_instance
+    if len(args) != 0:
+        print("Usage: start_ui")
+        return
+
+    if web_ui_instance:
+        print(Fore.RED + Style.BRIGHT + "[!] Web UI already running" + Style.RESET_ALL)
+        return
+
+    print(Fore.GREEN + Style.BRIGHT + "[+] Starting Web UI on port 5000..."+ Style.RESET_ALL)
+    web_ui_instance = WebUIThread(session)
+    web_ui_instance.start()
+
 
 def cmd_clear(args):
     os.system("clear")
@@ -234,6 +260,7 @@ Available commands:
   help                   Show this help
   save                   Save current session
   load <filename>        Load a session file
+  start_ui               Start Web UI
   exit                   Quit
 
 """)
@@ -249,7 +276,8 @@ COMMANDS = {
     "help": cmd_help,
     "config": cmd_config,
     "save" : cmd_save,
-    "load" : cmd_load
+    "load" : cmd_load,
+    "start_ui" : cmd_start_ui
 }
 
 def get_prompt():

@@ -1,6 +1,8 @@
 import os
 import shutil
 from colorama import Fore, Back, Style
+from urllib.parse import urlparse
+
 
 
 def generate_krb5(domain, dc_ip):
@@ -117,7 +119,7 @@ def generate_etc_hosts(ip, hostname, dc=False):
     except Exception as e:
         return {"success": False, "error": str(e)}
 
-def add_vhost(target, domain, subdomains):
+def add_vhosts(target, domain, subdomains):
     path = "/etc/hosts"
 
     try:
@@ -128,7 +130,10 @@ def add_vhost(target, domain, subdomains):
 
     entry = f"{target} {domain} "
     for sub in subdomains:
-        entry += f"{sub}"
+        parsed = urlparse(sub)
+        domain = parsed.netloc or parsed.path
+        domain = domain.split(":")[0]
+        entry += f"{domain}"
 
     entry += "\n"
 

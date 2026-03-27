@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>adflow Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="container">
+        <header>
+            <h1>adflow <span>Dashboard</span></h1>
+            <div class="status-bar">
+                <p>Target: <span class="highlight">{{ session.target or 'Not set' }}</span></p>
+                <p>Domain: <span class="highlight">{{ session.domain or 'Not set' }}</span></p>
+            </div>
+        </header>
+
+        <section class="options-card">
+            <h2>Options Configuration</h2>
+            <div class="options-grid">
+                <div class="option-item"><strong>Username:</strong> {{ session.username or 'Not set' }}</div>
+                <div class="option-item"><strong>Password:</strong> {{ session.password or 'Not set' }}</div>
+                <div class="option-item"><strong>DC Configured:</strong> {{ '✅' if session.dc_config else '❌' }}</div>
+            </div>
+        </section>
+
+        <section class="data-grid">
+            <div class="data-card">
+                <h3>Users</h3>
+                {% if session.data.users %}
+                <ul>
+                    {% for u in session.data.users %}
+                    <li>{{ u }}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="empty">No users collected</p>
+                {% endif %}
+            </div>
+
+            <div class="data-card">
+                <h3>Hosts</h3>
+                {% if session.data.hosts %}
+                <ul>
+                    {% for h in session.data.hosts %}
+                    <li>{{ h }}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="empty">No hosts collected</p>
+                {% endif %}
+            </div>
+
+            <div class="data-card">
+                <h3>Services</h3>
+                {% if session.data.services %}
+                <ul>
+                    {% for s in session.data.services %}
+                        {# Buscamos si el servicio tiene credenciales #}
+                        {% set found_creds = [] %}
+                        {% for item in session.data.services_with_access %}
+                            {% if s in item %}
+                                {# Usamos un truco: guardamos los valores en la variable #}
+                                {% set _ = found_creds.append(item[s]) or "" %}
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if found_creds %}
+                            <li class="service-item has-access pwned-effect">
+                                <div class="service-main">
+                                    <span class="icon">🔓</span>
+                                    <span class="name">{{ s }}</span>
+                                </div>
+                                <div class="creds-container">
+                                    <span class="creds-label">CREDS:</span>
+                                    <span class="creds-data">{{ found_creds[0][0] }}:{{ found_creds[0][1] }}</span>
+                                </div>
+                            </li>
+                        {% else %}
+                            <li class="service-item no-access">
+                                <span class="icon">🔒</span>
+                                <span class="name">{{ s }}</span>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="empty">No services detected</p>
+                {% endif %}
+            </div>
+        </section>
+
+        <section class="terminal-section">
+            <details>
+                <summary class="terminal-header">
+                    <span class="terminal-button red"></span>
+                    <span class="terminal-button yellow"></span>
+                    <span class="terminal-button green"></span>
+                    <span class="terminal-title">nmap_output.log</span>
+                    <span class="expand-icon">▼</span>
+                </summary>
+                <div class="terminal-body">
+                    <pre><code>{{ session.data.nmap_output or 'No nmap output available.' }}</code></pre>
+                </div>
+            </details>
+        </section>
+
+        <section class="data-grid secondary-data">
+            <div class="data-card">
+                <h3>SMB Shares</h3>
+                {% if session.data.smb_shares %}
+                <ul class="share-list">
+                    {% for share in session.data.smb_shares %}
+                    <li class="share-item">
+                        <span class="icon">📂</span> {{ share }}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="empty">No shares found</p>
+                {% endif %}
+            </div>
+
+            <div class="data-card">
+                <h3>Web Routes</h3>
+                {% if session.data.routes %}
+                <ul class="route-list">
+                    {% for route in session.data.routes %}
+                    <li class="route-item">
+                        <a class="grey-link" target="_blank" href={{route}}>{{ route }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="empty">No routes discovered</p>
+                {% endif %}
+            </div>
+
+            <div class="data-card">
+                <h3>Subdomains</h3>
+                {% if session.data.subdomains %}
+                <ul class="subdomain-list">
+                    {% for sub in session.data.subdomains %}
+                    <li class="subdomain-item">
+                        <span class="icon">🌐</span> <a class="grey-link" target="_blank" href={{sub}}>{{ sub }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="empty">No subdomains mapped</p>
+                {% endif %}
+            </div>
+        </section>
+
+    </main>
+</body>
+</html>

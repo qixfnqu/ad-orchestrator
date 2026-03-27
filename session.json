@@ -1,93 +1,43 @@
 {
-    "target": "10.129.14.233",
-    "domain": "pirate.htb",
-    "username": "pentest",
-    "password": "p3nt3st2025!&",
-    "dc_config": true,
+    "target": "10.129.15.37",
+    "domain": "monitorsfour.htb",
+    "username": null,
+    "password": null,
+    "dc_config": false,
     "data": {
-        "users": [
-            "Guest",
-            "administrator",
-            "j.sparrow",
-            "Administrator",
-            "krbtgt",
-            "pentest",
-            "a.white",
-            "a.white_adm"
-        ],
+        "users": [],
         "hashes": [],
         "hosts": [
-            "10.129.14.233"
+            "10.129.15.37"
         ],
-        "creds": [
-            [
-                "pentest",
-                "p3nt3st2025!&"
-            ],
-            [
-                "pentest",
-                "p3nt3st2025!&"
-            ]
-        ],
+        "creds": [],
         "ports": [
-            53,
             80,
-            88,
-            135,
-            139,
-            389,
-            443,
-            445,
-            464,
-            593,
-            636,
-            2179,
-            3268,
-            3269,
             5985
         ],
         "services": [
-            "globalcatLDAP",
-            "smb",
-            "globalcatLDAPssl",
-            "http",
-            "netbios",
-            "rpc",
-            "unknown",
-            "ldap",
-            "kerberos",
-            "rpc over http",
-            "ldaps",
             "winrm",
-            "kpasswd",
-            "dns"
+            "http"
         ],
-        "nmap_output": "Starting Nmap 7.98 ( https://nmap.org ) at 2026-03-26 21:45 +0100\nNmap scan report for dc01.pirate.htb (10.129.14.233)\nHost is up (0.042s latency).\nNot shown: 985 filtered tcp ports (no-response)\nPORT     STATE SERVICE       VERSION\n53/tcp   open  domain        Simple DNS Plus\n80/tcp   open  http          Microsoft IIS httpd 10.0\n|_http-title: IIS Windows Server\n| http-methods: \n|_  Potentially risky methods: TRACE\n|_http-server-header: Microsoft-IIS/10.0\n88/tcp   open  kerberos-sec  Microsoft Windows Kerberos (server time: 2026-03-27 03:46:08Z)\n135/tcp  open  msrpc         Microsoft Windows RPC\n139/tcp  open  netbios-ssn   Microsoft Windows netbios-ssn\n389/tcp  open  ldap          Microsoft Windows Active Directory LDAP (Domain: pirate.htb, Site: Default-First-Site-Name)\n|_ssl-date: 2026-03-27T03:47:29+00:00; +6h59m58s from scanner time.\n| ssl-cert: Subject: commonName=DC01.pirate.htb\n| Subject Alternative Name: othername: 1.3.6.1.4.1.311.25.1:<unsupported>, DNS:DC01.pirate.htb\n| Not valid before: 2025-06-09T14:05:15\n|_Not valid after:  2026-06-09T14:05:15\n443/tcp  open  https?\n445/tcp  open  microsoft-ds?\n464/tcp  open  kpasswd5?\n593/tcp  open  ncacn_http    Microsoft Windows RPC over HTTP 1.0\n636/tcp  open  ssl/ldap      Microsoft Windows Active Directory LDAP (Domain: pirate.htb, Site: Default-First-Site-Name)\n| ssl-cert: Subject: commonName=DC01.pirate.htb\n| Subject Alternative Name: othername: 1.3.6.1.4.1.311.25.1:<unsupported>, DNS:DC01.pirate.htb\n| Not valid before: 2025-06-09T14:05:15\n|_Not valid after:  2026-06-09T14:05:15\n|_ssl-date: 2026-03-27T03:47:29+00:00; +6h59m58s from scanner time.\n2179/tcp open  vmrdp?\n3268/tcp open  ldap          Microsoft Windows Active Directory LDAP (Domain: pirate.htb, Site: Default-First-Site-Name)\n| ssl-cert: Subject: commonName=DC01.pirate.htb\n| Subject Alternative Name: othername: 1.3.6.1.4.1.311.25.1:<unsupported>, DNS:DC01.pirate.htb\n| Not valid before: 2025-06-09T14:05:15\n|_Not valid after:  2026-06-09T14:05:15\n|_ssl-date: 2026-03-27T03:47:29+00:00; +6h59m58s from scanner time.\n3269/tcp open  ssl/ldap      Microsoft Windows Active Directory LDAP (Domain: pirate.htb, Site: Default-First-Site-Name)\n|_ssl-date: 2026-03-27T03:47:29+00:00; +6h59m58s from scanner time.\n| ssl-cert: Subject: commonName=DC01.pirate.htb\n| Subject Alternative Name: othername: 1.3.6.1.4.1.311.25.1:<unsupported>, DNS:DC01.pirate.htb\n| Not valid before: 2025-06-09T14:05:15\n|_Not valid after:  2026-06-09T14:05:15\n5985/tcp open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)\n|_http-title: Not Found\n|_http-server-header: Microsoft-HTTPAPI/2.0\nService Info: Host: DC01; OS: Windows; CPE: cpe:/o:microsoft:windows\n\nHost script results:\n| smb2-security-mode: \n|   3.1.1: \n|_    Message signing enabled and required\n| smb2-time: \n|   date: 2026-03-27T03:46:49\n|_  start_date: N/A\n|_clock-skew: mean: 6h59m57s, deviation: 0s, median: 6h59m57s\n\nService detection performed. Please report any incorrect results at https://nmap.org/submit/ .\nNmap done: 1 IP address (1 host up) scanned in 91.85 seconds\n",
-        "nmap_kerberos_output": "",
+        "nmap_output": "Starting Nmap 7.98 ( https://nmap.org ) at 2026-03-27 01:39 +0100\nNmap scan report for monitorsfour.htb (10.129.15.37)\nHost is up (0.042s latency).\nNot shown: 998 filtered tcp ports (no-response)\nPORT     STATE SERVICE VERSION\n80/tcp   open  http    nginx\n| http-cookie-flags: \n|   /: \n|     PHPSESSID: \n|_      httponly flag not set\n|_http-title: MonitorsFour - Networking Solutions\n5985/tcp open  http    Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)\n|_http-server-header: Microsoft-HTTPAPI/2.0\n|_http-title: Not Found\nService Info: OS: Windows; CPE: cpe:/o:microsoft:windows\n\nService detection performed. Please report any incorrect results at https://nmap.org/submit/ .\nNmap done: 1 IP address (1 host up) scanned in 17.78 seconds\n",
         "smb_null_session": false,
-        "smb_shares": [
-            "ADMIN$",
-            "C$",
-            "IPC$",
-            "NETLOGON",
-            "SYSVOL"
+        "smb_shares": [],
+        "ldap_info": "",
+        "routes": [
+            "http://monitorsfour.htb/.htaccess",
+            "http://monitorsfour.htb/user",
+            "http://monitorsfour.htb/contact",
+            "http://monitorsfour.htb/forgot-password",
+            "http://monitorsfour.htb/views",
+            "http://monitorsfour.htb/.hta",
+            "http://monitorsfour.htb/login",
+            "http://monitorsfour.htb/static",
+            "http://monitorsfour.htb/controllers",
+            "http://monitorsfour.htb/.htpasswd"
         ],
-        "ldap_info": "# extended LDIF\n#\n# LDAPv3\n# base <> (default) with scope baseObject\n# filter: (objectclass=*)\n# requesting: ALL\n#\n\n#\ndn:\ndomainFunctionality: 7\nforestFunctionality: 7\ndomainControllerFunctionality: 7\nrootDomainNamingContext: DC=pirate,DC=htb\nldapServiceName: pirate.htb:dc01$@PIRATE.HTB\nisGlobalCatalogReady: TRUE\nsupportedSASLMechanisms: GSSAPI\nsupportedSASLMechanisms: GSS-SPNEGO\nsupportedSASLMechanisms: EXTERNAL\nsupportedSASLMechanisms: DIGEST-MD5\nsupportedLDAPVersion: 3\nsupportedLDAPVersion: 2\nsupportedLDAPPolicies: MaxPoolThreads\nsupportedLDAPPolicies: MaxPercentDirSyncRequests\nsupportedLDAPPolicies: MaxDatagramRecv\nsupportedLDAPPolicies: MaxReceiveBuffer\nsupportedLDAPPolicies: MaxPreAuthReceiveBuffer\nsupportedLDAPPolicies: InitRecvTimeout\nsupportedLDAPPolicies: MaxConnections\nsupportedLDAPPolicies: MaxConnIdleTime\nsupportedLDAPPolicies: MaxPageSize\nsupportedLDAPPolicies: MaxBatchReturnMessages\nsupportedLDAPPolicies: MaxQueryDuration\nsupportedLDAPPolicies: MaxDirSyncDuration\nsupportedLDAPPolicies: MaxTempTableSize\nsupportedLDAPPolicies: MaxResultSetSize\nsupportedLDAPPolicies: MinResultSets\nsupportedLDAPPolicies: MaxResultSetsPerConn\nsupportedLDAPPolicies: MaxNotificationPerConn\nsupportedLDAPPolicies: MaxValRange\nsupportedLDAPPolicies: MaxValRangeTransitive\nsupportedLDAPPolicies: ThreadMemoryLimit\nsupportedLDAPPolicies: SystemMemoryLimitPercent\nsupportedControl: 1.2.840.113556.1.4.319\nsupportedControl: 1.2.840.113556.1.4.801\nsupportedControl: 1.2.840.113556.1.4.473\nsupportedControl: 1.2.840.113556.1.4.528\nsupportedControl: 1.2.840.113556.1.4.417\nsupportedControl: 1.2.840.113556.1.4.619\nsupportedControl: 1.2.840.113556.1.4.841\nsupportedControl: 1.2.840.113556.1.4.529\nsupportedControl: 1.2.840.113556.1.4.805\nsupportedControl: 1.2.840.113556.1.4.521\nsupportedControl: 1.2.840.113556.1.4.970\nsupportedControl: 1.2.840.113556.1.4.1338\nsupportedControl: 1.2.840.113556.1.4.474\nsupportedControl: 1.2.840.113556.1.4.1339\nsupportedControl: 1.2.840.113556.1.4.1340\nsupportedControl: 1.2.840.113556.1.4.1413\nsupportedControl: 2.16.840.1.113730.3.4.9\nsupportedControl: 2.16.840.1.113730.3.4.10\nsupportedControl: 1.2.840.113556.1.4.1504\nsupportedControl: 1.2.840.113556.1.4.1852\nsupportedControl: 1.2.840.113556.1.4.802\nsupportedControl: 1.2.840.113556.1.4.1907\nsupportedControl: 1.2.840.113556.1.4.1948\nsupportedControl: 1.2.840.113556.1.4.1974\nsupportedControl: 1.2.840.113556.1.4.1341\nsupportedControl: 1.2.840.113556.1.4.2026\nsupportedControl: 1.2.840.113556.1.4.2064\nsupportedControl: 1.2.840.113556.1.4.2065\nsupportedControl: 1.2.840.113556.1.4.2066\nsupportedControl: 1.2.840.113556.1.4.2090\nsupportedControl: 1.2.840.113556.1.4.2205\nsupportedControl: 1.2.840.113556.1.4.2204\nsupportedControl: 1.2.840.113556.1.4.2206\nsupportedControl: 1.2.840.113556.1.4.2211\nsupportedControl: 1.2.840.113556.1.4.2239\nsupportedControl: 1.2.840.113556.1.4.2255\nsupportedControl: 1.2.840.113556.1.4.2256\nsupportedControl: 1.2.840.113556.1.4.2309\nsupportedControl: 1.2.840.113556.1.4.2330\nsupportedControl: 1.2.840.113556.1.4.2354\nsupportedCapabilities: 1.2.840.113556.1.4.800\nsupportedCapabilities: 1.2.840.113556.1.4.1670\nsupportedCapabilities: 1.2.840.113556.1.4.1791\nsupportedCapabilities: 1.2.840.113556.1.4.1935\nsupportedCapabilities: 1.2.840.113556.1.4.2080\nsupportedCapabilities: 1.2.840.113556.1.4.2237\nsubschemaSubentry: CN=Aggregate,CN=Schema,CN=Configuration,DC=pirate,DC=htb\nserverName: CN=DC01,CN=Servers,CN=Default-First-Site-Name,CN=Sites,CN=Configur\n ation,DC=pirate,DC=htb\nschemaNamingContext: CN=Schema,CN=Configuration,DC=pirate,DC=htb\nnamingContexts: DC=pirate,DC=htb\nnamingContexts: CN=Configuration,DC=pirate,DC=htb\nnamingContexts: CN=Schema,CN=Configuration,DC=pirate,DC=htb\nnamingContexts: DC=DomainDnsZones,DC=pirate,DC=htb\nnamingContexts: DC=ForestDnsZones,DC=pirate,DC=htb\nisSynchronized: TRUE\nhighestCommittedUSN: 155878\ndsServiceName: CN=NTDS Settings,CN=DC01,CN=Servers,CN=Default-First-Site-Name,\n CN=Sites,CN=Configuration,DC=pirate,DC=htb\ndnsHostName: DC01.pirate.htb\ndefaultNamingContext: DC=pirate,DC=htb\ncurrentTime: 20260327034906.0Z\nconfigurationNamingContext: CN=Configuration,DC=pirate,DC=htb\n\n# search result\nsearch: 2\nresult: 0 Success\n\n# numResponses: 2\n# numEntries: 1\n",
-        "routes": [],
-        "subdomains": [],
-        "services_with_access": [
-            {
-                "ldap": [
-                    "pentest",
-                    "p3nt3st2025!&"
-                ]
-            },
-            {
-                "smb": [
-                    "pentest",
-                    "p3nt3st2025!&"
-                ]
-            }
-        ]
+        "subdomains": [
+            "http://cacti.monitorsfour.htb"
+        ],
+        "services_with_access": []
     }
 }

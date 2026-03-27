@@ -15,6 +15,7 @@ It provides an interactive CLI tool for performing external reconnaissance and e
 - Supports both credentialed and non-credentialed enumeration workflows
 - Displays collected data including users, hosts, credentials, and ports
 - Modular command design for extensibility
+- Desploys a Flask based local web UI for data visualization
 
 ---
 
@@ -65,9 +66,9 @@ Contributions are welcome! Suggested improvements include:
 ## 📝 TODO
 - Improve non-credentialed enumeration
 - Improve credentialed enumeration
-- Improve session import/export functionality
-- Add modules
-- Add web UI vor visualization/modification
+- Possibliy replace JSON session management to an SQL instance
+- Add more modules
+- Add the ability do modify session data from web UI
 
 ## ⚠️ Disclaimer
 

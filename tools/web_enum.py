@@ -117,7 +117,7 @@ def subdomain_discovery(target, domain, mode, wordlist, use_https=False):
 				print(Fore.GREEN + f"[+] SUBDOMAIN FOUND: {sub.strip()}")
 				print(Style.RESET_ALL)
 
-				full_domain = f"{sub}.{domain}"
+				full_domain = f"{proto}://{sub}.{domain}"
 				subdomains.append(full_domain)
 	except KeyboardInterrupt:
 		if process:

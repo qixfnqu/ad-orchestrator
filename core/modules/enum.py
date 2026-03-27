@@ -211,6 +211,11 @@ def step_web(session):
         subdomains = web_enum.subdomain_discovery(scan_target, session.domain, mode, wordlist, use_https)
         session.data["subdomains"] = list(set(session.data["subdomains"] + subdomains))
 
+        if mode == "vhost" and len(subdomains) != 0:
+            add_vhosts = confirm("[?] Do you want to add /etc/hosts entries for the subdomains? (Y/N) ")
+            if add_vhosts:
+                config_manager.add_vhosts(session.target, session.domain, subdomains)
+
 def step_bloodhound(session):
     if not session.domain:
         set_domain = confirm("[?] No domain set, do you want to manually set it? (Y/N) ")

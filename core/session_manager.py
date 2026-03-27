@@ -1,4 +1,5 @@
 import json
+from colorama import Fore, Back, Style
 
 class Session:
     def __init__(self):
@@ -15,7 +16,6 @@ class Session:
             "ports": [],
             "services": [],
             "nmap_output": "",
-            "nmap_kerberos_output": "",
             "smb_null_session": False,
             "smb_shares": [],
             "ldap_info": "",
@@ -35,9 +35,21 @@ class Session:
         }
 
     def from_dict(self, d):
+        required_fields = ["target", "domain", "username", "password", "dc_config", "data"]
+        for field in required_fields:
+            if field not in d:
+                print(Fore.RED + f"[-] Session data is corrupted or missing field: {field}" + Style.RESET_ALL)
+                return {"error": True}
+
+        if not isinstance(d["data"], dict):
+            print(Fore.RED + "[-] Session data is corrupted: 'data' should be a dictionary" +  Style.RESET_ALL)
+            return {"error": True}
+
         self.target = d.get("target")
         self.domain = d.get("domain")
         self.username = d.get("username")
         self.password = d.get("password")
         self.dc_config = d.get("dc_config", False)
         self.data = d.get("data", self.data)
+
+        return {"error": False}
