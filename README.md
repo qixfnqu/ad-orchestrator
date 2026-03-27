@@ -73,6 +73,11 @@ Contributions are welcome! Suggested improvements include:
 - Possibliy replace JSON session management to an SQL instance
 - Add more modules
 - Add the ability do modify session data from web UI
+<<<<<<< HEAD
+=======
+- Fix old kerbrute module
+- Possibly replace nxc module to a non nxc-dependant functionality
+>>>>>>> 49bd065 (Refactor some functionality to native impacket library)
 
 ## ⚠️ Disclaimer
 

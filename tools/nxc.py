@@ -5,10 +5,13 @@ from core import aux
 import re
 
 
+<<<<<<< HEAD
 import re
 
 import re
 
+=======
+>>>>>>> 49bd065 (Refactor some functionality to native impacket library)
 def parse_smb_enum(output):
     shares = []
     users = []
