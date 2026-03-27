@@ -1,25 +1,3 @@
-<<<<<<< HEAD
-import subprocess
-from core import aux
-
-
-def anon_session(target):
-
-    cmd = [
-        "rpcclient",
-        "-U", "",
-        "-N",
-        target,
-        "-c", "enumdomusers;enumdomgroups;queryuser 500;srvinfo"
-    ]
-
-    output = aux.run_command(cmd)
-
-    if "NT_STATUS_ACCESS_DENIED" in output:
-        return False
-
-    return output
-=======
 from impacket.dcerpc.v5 import transport, samr
 from impacket.dcerpc.v5.rpcrt import DCERPCException
 from colorama import Fore, Style
@@ -67,4 +45,3 @@ def anon_session(target):
         else:
             print(f"[-] Error RPC: {e}")
         return False
->>>>>>> 49bd065 (Refactor some functionality to native impacket library)

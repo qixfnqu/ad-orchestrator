@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-import subprocess
-from core import aux
-
-=======
->>>>>>> 49bd065 (Refactor some functionality to native impacket library)
 from ldap3 import Server, Connection, ALL, SUBTREE
 from ldap3.core.exceptions import LDAPException, LDAPBindError
 
@@ -11,22 +5,6 @@ from colorama import Fore, Back, Style
 
 def anon_bind(target, ports):
     for port in ports:
-<<<<<<< HEAD
-        print(f"[+] Trying on port {port}")
-
-        cmd = [
-            "ldapsearch",
-            "-x",
-            "-H", f"ldap://{target}:{port}",
-            "-s", "base",
-            "(objectclass=*)"
-        ]
-
-        output = aux.run_command(cmd)
-
-        if "Can't contact LDAP server" not in output:
-            return output
-=======
         print(f"[*] Testing anonymous bind on {target}:{port}...")
         try:
             server = Server(f'ldap://{target}:{port}', get_info=ALL, connect_timeout=5)
@@ -55,7 +33,6 @@ def anon_bind(target, ports):
         finally:
             if 'conn' in locals() and conn.bound:
                 conn.unbind()
->>>>>>> 49bd065 (Refactor some functionality to native impacket library)
 
     return None
 

@@ -63,24 +63,14 @@ def extract_domain(nmap_output):
 def step_nmap(session):
     print("Choose nmap scan type:\n1) Basic\n2) Extensive")
     mode = input("> ").strip()
-<<<<<<< HEAD
-    save = confirm("Save results? (Y/N): ")
-=======
->>>>>>> 49bd065 (Refactor some functionality to native impacket library)
 
     if not confirm("Execute scan? (Y/N): "):
         return
 
     if mode == "2":
-<<<<<<< HEAD
-        output = nmap.extensive_scan(session.target, save)
-    else:
-        output = nmap.basic_scan(session.target, save)
-=======
         output = nmap.extensive_scan(session.target)
     else:
         output = nmap.basic_scan(session.target)
->>>>>>> 49bd065 (Refactor some functionality to native impacket library)
 
     session.data["nmap_output"] = output[0]
     session.data["ports"] = output[1]
@@ -151,15 +141,6 @@ def step_smb_cred(session):
     if output["users"]:
         session.data["users"] = list(set(session.data["users"] + output["users"]))
 
-<<<<<<< HEAD
-
-def step_rpc(session):
-    if not rpc.anon_session(session.target):
-        print(Fore.RED + "[-] RPC null session failed" + Style.RESET_ALL)
-=======
-    #if output["users"]:
-    #    session.data["users"] = list(set(session.data["users"] + output["users"]))
-
 
 def step_rpc(session):
     result = rpc.anon_session(session.target)
@@ -167,7 +148,6 @@ def step_rpc(session):
         print(Fore.RED + "[-] RPC null session failed" + Style.RESET_ALL)
     else:
         session.data["users"] = list(set(session.data["users"] + result["users"]))
->>>>>>> 49bd065 (Refactor some functionality to native impacket library)
 
 
 def step_kerbrute(session):
@@ -175,7 +155,6 @@ def step_kerbrute(session):
         print(Fore.RED + "[-] No domain set" + Style.RESET_ALL)
         return
 
-<<<<<<< HEAD
     wordlist = input("Wordlist (default=/usr/share/seclists/Usernames/top-usernames-shortlist.txt): ").strip() or \
         "/usr/share/seclists/Usernames/top-usernames-shortlist.txt"
 
@@ -183,16 +162,7 @@ def step_kerbrute(session):
 
     if result["users"]:
         session.data["users"] = list(set(session.data["users"] + result["users"]))
-=======
-    print(Fore.YELLOW + "[*] Under construction..." + Style.RESET_ALL)
-    #wordlist = input("Wordlist (default=/usr/share/seclists/Usernames/top-usernames-shortlist.txt): ").strip() or \
-    #    "/usr/share/seclists/Usernames/top-usernames-shortlist.txt"
 
-    #result = kerbrute_enum.user_enum(session.domain, session.target, wordlist)
-
-    #if result["users"]:
-    #    session.data["users"] = list(set(session.data["users"] + result["users"]))
->>>>>>> 49bd065 (Refactor some functionality to native impacket library)
 
 
 def step_kerberoast(session):
@@ -203,11 +173,7 @@ def step_kerberoast(session):
     wordlist = input("Wordlist (default=/usr/share/seclists/Usernames/top-usernames-shortlist.txt): ").strip() or \
         "/usr/share/seclists/Usernames/top-usernames-shortlist.txt"
 
-<<<<<<< HEAD
-    kerberoast.unauthenticated_asrep(session.target, session.domain, wordlist)
-=======
     kerberoast.native_asrep_roasting(session.target, session.domain, wordlist)
->>>>>>> 49bd065 (Refactor some functionality to native impacket library)
     print("\n")
  
 

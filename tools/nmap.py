@@ -2,25 +2,6 @@ import subprocess
 import re
 
 from core import aux
-<<<<<<< HEAD
-
-
-def parse_ports(output):
-    ports = []
-
-    for line in output.splitlines():
-        match = re.match(r"(\d+)\/\w+\s+open", line)
-        
-        if match:
-            port = int(match.group(1))
-            ports.append(port)
-
-    return ports
-
-def run_scan(cmd):
-    output = aux.run_command(cmd)
-    ports = parse_ports(output)
-=======
 import xml.etree.ElementTree as ET
 
 import os
@@ -53,26 +34,15 @@ def parse_ports(xml_file):
 def run_scan(target, cmd):
     output = aux.run_command(cmd)
     ports = parse_ports(f"{target}_scan.xml")
->>>>>>> 49bd065 (Refactor some functionality to native impacket library)
 
     return [output, ports]
 
 
-<<<<<<< HEAD
-def basic_scan(target, save=False):
-    cmd = ["nmap", "-sC", "-sV", target]
-
-    if save:
-        cmd += ["-oN", f"{target}_scan.txt"]
-
-    return run_scan(cmd)
-=======
 def basic_scan(target):
     cmd = ["nmap", "-sC", "-sV", target, "-oX", f"{target}_scan.xml"]
 
 
     return run_scan(target, cmd)
->>>>>>> 49bd065 (Refactor some functionality to native impacket library)
 
 
 def extensive_scan(target, save=False):
@@ -85,18 +55,9 @@ def extensive_scan(target, save=False):
         "--script-args", "ldap.show-all-info=true,unsafe=1",
         target
     ]
-
-<<<<<<< HEAD
-    if save:
-        cmd += ["-oN", f"{target}_scan.txt"]
-
-    return run_scan(cmd)
-=======
-    
     cmd += ["-oX", f"{target}_scan.xml"]
 
     return run_scan(target, cmd)
->>>>>>> 49bd065 (Refactor some functionality to native impacket library)
 
 def kerberos_scan(target, realm, dict_path, save=False):
     cmd = [
@@ -107,18 +68,10 @@ def kerberos_scan(target, realm, dict_path, save=False):
         f"krb5-enum-users.realm={realm},krb5-enum-users.userdict={dict_path}",
         target
     ]
-
-<<<<<<< HEAD
-    if save:
-        cmd += ["-oN", f"{target}_kerberos_scan.txt"]
-
-    return run_scan(cmd)
-=======
     
     cmd += ["-oX", f"{target}_kerberos_scan.xml"]
 
     return run_scan(target, cmd)
->>>>>>> 49bd065 (Refactor some functionality to native impacket library)
 
 def web_scan(target):
     cmd = [
@@ -131,8 +84,5 @@ def web_scan(target):
         target
     ]
 
-<<<<<<< HEAD
-    return run_scan(cmd)
-=======
+
     return run_scan(target, cmd)
->>>>>>> 49bd065 (Refactor some functionality to native impacket library)
