@@ -40,7 +40,11 @@ Once launched, you’ll see an interactive prompt:
 | `config dc`            | Generate domain config (krb5/hosts) |
 | `clear`                | Clear the terminal screen           |
 | `help`                 | Show help menu                      |
+| `save`                 | Save current session                |
+| `load <filename>`      | Load a session file                 |
+| `start_ui`             | Start Web UI                        |
 | `exit` / `quit`        | Quit the program                    |
+
 
 ## 🧩 Session Configuration
 
