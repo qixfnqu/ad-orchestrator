@@ -125,10 +125,10 @@ def step_smb(session):
     session.data["smb_null_session"] = True
 
     output = nxc.smb_enum(session.target)
-    if not output["shares"]:
-        session.data["smb_shares"] = smbclient.list_shares(session.target)
-    else:
+    if output["shares"]:
         session.data["smb_shares"] = output["shares"]
+    else:
+        session.data["smb_shares"] = smbclient.list_shares(session.target)
 
     if output["users"]:
         session.data["users"] = output["users"]

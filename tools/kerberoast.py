@@ -34,4 +34,3 @@ def native_asrep_roasting(target, domain, wordlist_path):
                 pass
     return hashes
 
->>>>>>> 49bd065 (Refactor some functionality to native impacket library)

@@ -59,7 +59,6 @@ def parse_smb_enum(output):
             if parts and parts[0]:
                 users.append(parts[0].strip())
 
-    # eliminar duplicados manteniendo orden
     shares = list(dict.fromkeys(shares))
     users = list(dict.fromkeys(users))
 
@@ -106,7 +105,7 @@ def smb_enum(target, username="", password=""):
     output = aux.run_command(cmd)
 
     if "STATUS_ACCESS_DENIED" in output:
-        return False
+        return {"shares" : [], "users": []}
 
     return parse_smb_enum(output)
 

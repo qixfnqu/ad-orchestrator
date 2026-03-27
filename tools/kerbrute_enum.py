@@ -26,3 +26,4 @@ def user_enum(domain, dc_ip, wordlist):
     return {
         "users": users,
         "output": output
+    }
